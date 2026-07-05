@@ -1,0 +1,32 @@
+/* Campaigns — list of campaign cards. Shares cockpit shell + shared primitives. */
+
+.cc .cmptoolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+.cc .cmpfilters { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.cc .cmplist { display: flex; flex-direction: column; gap: 12px; }
+.cc .cmpcard {
+  position: relative; background: linear-gradient(180deg, var(--panel2), var(--panel));
+  border: 1px solid var(--edge); border-left-width: 3px; border-radius: 12px; padding: 15px 17px;
+  transition: transform .16s, box-shadow .16s;
+}
+.cc .cmpcard:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, .4); }
+.cc .cmpcard-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.cc .cmpcard-name { font-family: var(--font-cormorant), serif; font-size: 19px; font-weight: 600; color: var(--cream); line-height: 1.1; }
+.cc .cmpcard-goal { font-size: 12px; color: var(--mut); margin-top: 5px; line-height: 1.4; }
+.cc .cmpcard-actions { display: flex; gap: 2px; flex: none; opacity: 0; transition: opacity .14s; }
+.cc .cmpcard:hover .cmpcard-actions { opacity: 1; }
+.cc .cmpbtn { background: none; border: none; color: var(--dim); cursor: pointer; padding: 4px; border-radius: 7px; display: flex; transition: color .14s, background .14s; }
+.cc .cmpbtn:hover { color: var(--gold); background: rgba(245, 181, 49, .08); }
+.cc .cmpbtn.danger:hover { color: #f0916a; background: rgba(240, 145, 106, .1); }
+
+.cc .cmpcard-meta { display: flex; align-items: center; gap: 10px; margin-top: 13px; flex-wrap: wrap; }
+.cc .cmpdates { font-family: var(--font-plex-mono), monospace; font-size: 9.5px; color: var(--dim); }
+.cc .objchip {
+  font-family: var(--font-plex-mono), monospace; font-size: 8.5px; font-weight: 600; letter-spacing: .5px;
+  text-transform: uppercase; padding: 3px 8px; border-radius: 20px; background: #2e2412; color: var(--gold); border: 1px solid #5a431f; white-space: nowrap;
+}
+.cc .cstatuschip {
+  font-family: var(--font-plex-mono), monospace; font-size: 8.5px; font-weight: 600; letter-spacing: .5px;
+  text-transform: uppercase; padding: 3px 8px; border-radius: 20px; border: 1px solid; white-space: nowrap;
+}
+.cc .cmp-empty { text-align: center; color: var(--dim); padding: 28px; font-size: 12px; }

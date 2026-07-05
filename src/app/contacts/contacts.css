@@ -1,0 +1,33 @@
+/* Contacts table — shares the cockpit shell + shared UI primitives from command-center.css. */
+
+.cc .ctoolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+.cc .cfilters { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.cc .cfilters .flabel { font-family: var(--font-plex-mono), monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--dim); }
+.cc .fsel {
+  background: var(--panel2); border: 1px solid var(--edge); border-radius: 9px; color: var(--cream);
+  font-family: var(--font-montserrat), sans-serif; font-size: 12px; padding: 7px 10px; outline: none; cursor: pointer;
+}
+.cc .fsel:focus { border-color: var(--gold); }
+.cc .fsel option { background: var(--panel); color: var(--cream); }
+.cc .ccount { font-family: var(--font-plex-mono), monospace; font-size: 10px; color: var(--dim); }
+
+.cc .ctable { overflow-x: auto; padding: 4px; }
+.cc table.contacts { width: 100%; border-collapse: collapse; min-width: 760px; }
+.cc table.contacts th {
+  text-align: left; font-family: var(--font-plex-mono), monospace; font-size: 9px; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--dim); font-weight: 600; padding: 11px 14px; border-bottom: 1px solid var(--edge);
+}
+.cc table.contacts td { padding: 11px 14px; border-top: 1px solid var(--edge); font-size: 12.5px; color: var(--cream); vertical-align: middle; }
+.cc table.contacts tbody tr:first-child td { border-top: none; }
+.cc table.contacts tbody tr { transition: background .14s; }
+.cc table.contacts tbody tr:hover { background: rgba(245, 181, 49, .05); }
+.cc .c-name { font-weight: 600; color: var(--cream); }
+.cc .c-sub { color: var(--mut); }
+.cc .c-link { color: var(--mut); text-decoration: none; }
+.cc .c-link:hover { color: var(--gold); }
+.cc .c-actions { text-align: right; white-space: nowrap; width: 1%; }
+.cc .iconbtn { background: none; border: none; color: var(--dim); cursor: pointer; padding: 5px; border-radius: 7px; opacity: 0; transition: opacity .14s, color .14s, background .14s; }
+.cc table.contacts tbody tr:hover .iconbtn { opacity: 1; }
+.cc .iconbtn:hover { color: var(--gold); background: rgba(245, 181, 49, .08); }
+.cc .iconbtn.danger:hover { color: #f0916a; background: rgba(240, 145, 106, .1); }
+.cc .c-empty { text-align: center; color: var(--dim); padding: 28px; font-size: 12px; }

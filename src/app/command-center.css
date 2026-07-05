@@ -1,0 +1,233 @@
+/*
+  Command Center (dark cockpit) — ported from reference/PVLE_Command_Center.jsx.
+  Fonts come from the next/font CSS variables (--font-cormorant / --font-montserrat /
+  --font-plex-mono) — NO @import. Colors come from the cockpit tokens emitted by
+  globals.css (@theme → --color-*). Everything is scoped under .cc.
+*/
+
+.cc {
+  --bg: var(--color-bg);
+  --panel: var(--color-panel);
+  --panel2: var(--color-panel2);
+  --edge: var(--color-edge);
+  --gold: var(--color-gold);
+  --cream: var(--color-cream);
+  --mut: var(--color-muted);
+  --dim: var(--color-dim);
+  --ok: var(--color-ok);
+
+  font-family: var(--font-montserrat), sans-serif;
+  background:
+    radial-gradient(1200px 500px at 15% -10%, #2a2012 0%, transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, #241a10 0%, transparent 55%),
+    var(--bg);
+  color: var(--cream);
+  min-height: 100vh;
+  flex: 1;
+  padding: 26px 28px 34px;
+}
+.cc * { box-sizing: border-box; }
+.cc .serif { font-family: var(--font-cormorant), serif; }
+.cc .eye {
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 9.5px; letter-spacing: 2.5px; color: var(--dim); text-transform: uppercase;
+}
+.cc .panel {
+  background: linear-gradient(180deg, var(--panel2), var(--panel));
+  border: 1px solid var(--edge); border-radius: 16px;
+}
+.cc .empty { font-size: 11px; color: var(--dim); padding: 8px 0 2px; }
+
+.cc-fade { animation: ccRise .5s ease both; }
+@keyframes ccRise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .cc-fade { animation: none; }
+  .cc .zone { transition: none; }
+}
+
+/* ---- header ---- */
+.cc .hq { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 14px; }
+.cc .hq h1 { font-size: 34px; font-weight: 600; line-height: 1; letter-spacing: -.3px; }
+.cc .hq h1 b { color: var(--gold); font-weight: 600; }
+.cc .status { margin-top: 9px; display: flex; gap: 16px; flex-wrap: wrap; }
+.cc .status span { font-size: 11px; color: var(--mut); display: flex; align-items: center; gap: 6px; }
+.cc .status i { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 6px var(--gold); display: inline-block; }
+.cc .hqR { display: flex; align-items: center; gap: 12px; position: relative; }
+
+.cc .present-btn {
+  display: flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, var(--gold), #e0821c); color: #1a140a;
+  border: none; border-radius: 12px; padding: 11px 16px;
+  font-family: var(--font-montserrat), sans-serif; font-weight: 700; font-size: 12px;
+  cursor: pointer; box-shadow: 0 4px 14px #f5b53133;
+}
+.cc .present-btn:hover { filter: brightness(1.06); }
+
+/* Simple header nav link (shared by the dashboard + Files; full sidebar later). */
+.cc .navlink {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-montserrat), sans-serif; font-size: 12px; font-weight: 600;
+  color: var(--mut); text-decoration: none;
+  padding: 10px 13px; border: 1px solid var(--edge); border-radius: 12px; background: var(--panel);
+}
+.cc .navlink:hover { color: var(--gold); border-color: #5a431f; }
+.cc .present-soon {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 10;
+  display: flex; align-items: center; gap: 10px; white-space: nowrap;
+  background: var(--panel2); border: 1px solid var(--edge); border-radius: 10px;
+  padding: 9px 12px; font-size: 11px; color: var(--mut); box-shadow: 0 8px 20px rgba(0,0,0,.4);
+}
+.cc .present-soon button { background: none; border: none; color: var(--dim); cursor: pointer; display: flex; padding: 0; }
+.cc .present-soon button:hover { color: var(--cream); }
+
+/* ---- meters ---- */
+.cc .meters { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 16px; }
+.cc .meter { padding: 16px; display: flex; align-items: center; gap: 13px; }
+.cc .meter .cap { font-size: 10px; letter-spacing: 1px; color: var(--dim); text-transform: uppercase; }
+.cc .meter .big { font-family: var(--font-cormorant), serif; font-size: 30px; font-weight: 700; line-height: 1; margin-top: 3px; }
+.cc .meter .sub { font-size: 10px; color: var(--mut); margin-top: 3px; }
+.cc .ring-ph {
+  width: 62px; height: 62px; border-radius: 50%; border: 2px dashed #4a3e29; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--dim); font-family: var(--font-cormorant), serif; font-size: 22px;
+}
+.cc .ph-tag {
+  display: inline-block; margin-top: 5px; font-family: var(--font-plex-mono), monospace;
+  font-size: 8px; letter-spacing: .5px; color: var(--dim); text-transform: uppercase;
+  border: 1px dashed #4a3e29; border-radius: 5px; padding: 2px 6px;
+}
+
+/* ---- main grid ---- */
+.cc .grid { display: grid; grid-template-columns: 1.75fr 1fr; gap: 16px; align-items: start; }
+.cc .sect-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.cc .sect-h .t { display: flex; align-items: center; gap: 8px; font-family: var(--font-cormorant), serif; font-size: 21px; font-weight: 600; }
+.cc .link { font-size: 10px; color: var(--dim); display: flex; align-items: center; gap: 2px; }
+
+/* ---- ecosystem zones ---- */
+.cc .zones { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cc .zone {
+  position: relative; background: var(--panel); border: 1px solid var(--edge);
+  border-left-width: 3px; border-radius: 13px; padding: 14px 15px; overflow: hidden;
+  transition: transform .18s, box-shadow .18s; cursor: pointer;
+}
+.cc .zone:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(0,0,0,.4); }
+.cc .zone:hover .pbadge { opacity: 1; }
+.cc .zone:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.cc .pbadge {
+  position: absolute; right: 12px; bottom: 12px; display: flex; align-items: center; gap: 4px;
+  font-family: var(--font-plex-mono), monospace; font-size: 8.5px; letter-spacing: .5px; opacity: .5; transition: opacity .18s;
+}
+.cc .zone .glow { position: absolute; right: -30px; top: -30px; width: 90px; height: 90px; border-radius: 50%; opacity: .14; filter: blur(6px); }
+.cc .zone .znm { font-family: var(--font-cormorant), serif; font-size: 19px; font-weight: 600; line-height: 1; }
+.cc .zone .ztag { font-family: var(--font-plex-mono), monospace; font-size: 8.5px; letter-spacing: 1.2px; color: var(--dim); margin-top: 5px; }
+.cc .zone .znote { font-size: 10px; color: var(--mut); margin-top: 11px; line-height: 1.35; max-width: 80%; }
+.cc .pulse { display: inline-flex; align-items: center; gap: 5px; font-size: 9px; font-family: var(--font-plex-mono), monospace; color: var(--mut); white-space: nowrap; }
+.cc .dot { width: 6px; height: 6px; border-radius: 50%; }
+
+/* ---- this week's focus ---- */
+.cc .focus { padding: 16px; }
+.cc .fcount { font-family: var(--font-plex-mono), monospace; font-size: 11px; color: var(--gold); }
+.cc .fbar { height: 8px; border-radius: 5px; background: #3a2e1f; overflow: hidden; margin: 4px 0 14px; }
+.cc .fbar i { display: block; height: 100%; background: linear-gradient(90deg, #f5b531, #e7663a); border-radius: 5px; transition: width .5s ease; }
+.cc .quest { display: flex; align-items: center; gap: 11px; padding: 9px 0; border-top: 1px solid var(--edge); }
+.cc .quest:first-of-type { border-top: none; }
+.cc .qbox { width: 19px; height: 19px; border-radius: 6px; border: 2px solid #5a4a2c; flex: none; display: flex; align-items: center; justify-content: center; }
+.cc .qbox.on { background: var(--ok); border-color: var(--ok); }
+.cc .qt { font-size: 11.5px; font-weight: 500; line-height: 1.25; }
+.cc .qt.on { color: var(--dim); text-decoration: line-through; }
+.cc .qwho { font-family: var(--font-plex-mono), monospace; font-size: 8.5px; color: var(--dim); margin-top: 2px; letter-spacing: .5px; }
+
+/* ---- needs attention ---- */
+.cc .att { padding: 15px 16px; margin-top: 16px; }
+.cc .arow { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid var(--edge); }
+.cc .arow:first-of-type { border-top: none; }
+.cc .achip { font-family: var(--font-plex-mono), monospace; font-size: 9px; padding: 3px 7px; border-radius: 6px; white-space: nowrap; }
+.cc .hot { background: #3a1e12; color: #f0916a; border: 1px solid #6a3418; }
+.cc .cool { background: #2a2314; color: var(--mut); border: 1px solid var(--edge); }
+
+/* ---- content this week ---- */
+.cc .content { padding: 15px 16px; margin-top: 16px; }
+.cc .cweek { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.cc .cslot { background: var(--panel2); border: 1px solid var(--edge); border-top-width: 3px; border-radius: 10px; padding: 10px 11px; }
+.cc .cslot .cd { font-family: var(--font-plex-mono), monospace; font-size: 8.5px; letter-spacing: 1px; color: var(--dim); }
+.cc .cslot .ct { font-size: 10.5px; font-weight: 600; margin-top: 5px; line-height: 1.2; }
+.cc .cslot .cm { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; gap: 6px; }
+.cc .cch { font-family: var(--font-plex-mono), monospace; font-size: 8px; color: var(--mut); }
+.cc .cst { font-size: 8px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; padding: 2px 5px; border-radius: 4px; white-space: nowrap; }
+
+@media (max-width: 900px) {
+  .cc .meters { grid-template-columns: 1fr 1fr; }
+  .cc .grid { grid-template-columns: 1fr; }
+  .cc .cweek { grid-template-columns: 1fr 1fr; }
+}
+
+/* ============================================================
+   Shared module UI primitives (CRUD module pages reuse these).
+   ============================================================ */
+.cc .addbtn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, var(--gold), #e0821c); color: #1a140a;
+  border: none; border-radius: 12px; padding: 10px 15px;
+  font-family: var(--font-montserrat), sans-serif; font-weight: 700; font-size: 12px;
+  cursor: pointer; box-shadow: 0 4px 14px #f5b53133;
+}
+.cc .addbtn:hover { filter: brightness(1.06); }
+
+.cc .chip {
+  font-family: var(--font-plex-mono), monospace; font-size: 8.5px; letter-spacing: .5px;
+  padding: 3px 8px; border-radius: 20px; background: #2a2314; color: var(--mut); border: 1px solid var(--edge); white-space: nowrap;
+}
+.cc .edot { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-plex-mono), monospace; font-size: 9.5px; color: var(--mut); }
+.cc .edot i { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+
+.cc .toast {
+  position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 60;
+  display: flex; align-items: center; gap: 12px; max-width: 90vw;
+  background: #3a1e12; color: #f0916a; border: 1px solid #6a3418; border-radius: 12px;
+  padding: 11px 15px; font-size: 12px; box-shadow: 0 10px 28px rgba(0, 0, 0, .5);
+}
+.cc .toast button { background: none; border: none; color: inherit; cursor: pointer; display: flex; opacity: .8; }
+.cc .toast button:hover { opacity: 1; }
+
+.cc .modal-backdrop {
+  position: fixed; inset: 0; z-index: 55; display: flex; align-items: center; justify-content: center;
+  padding: 16px; background: rgba(10, 8, 4, .62); animation: ccIn .18s ease both;
+}
+@keyframes ccIn { from { opacity: 0 } to { opacity: 1 } }
+.cc .modal {
+  width: 100%; max-width: 500px; max-height: 88vh; overflow-y: auto;
+  background: linear-gradient(180deg, var(--panel2), var(--panel)); border: 1px solid var(--edge); border-radius: 18px;
+}
+.cc .modal-h { position: sticky; top: 0; display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: var(--panel2); border-bottom: 1px solid var(--edge); }
+.cc .modal-title { font-family: var(--font-cormorant), serif; font-size: 21px; font-weight: 700; color: var(--cream); }
+.cc .modal-x { background: none; border: none; color: var(--dim); cursor: pointer; display: flex; }
+.cc .modal-x:hover { color: var(--cream); }
+.cc .modal-body { padding: 18px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cc .field { display: flex; flex-direction: column; }
+.cc .field.wide { grid-column: 1 / -1; }
+.cc .field label { font-family: var(--font-plex-mono), monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: .6px; color: var(--dim); margin-bottom: 5px; }
+.cc .field input, .cc .field select, .cc .field textarea {
+  width: 100%; background: var(--bg); border: 1px solid var(--edge); border-radius: 9px; color: var(--cream);
+  font-family: var(--font-montserrat), sans-serif; font-size: 13px; padding: 9px 11px; outline: none;
+}
+.cc .field textarea { resize: vertical; min-height: 58px; }
+.cc .field input:focus, .cc .field select:focus, .cc .field textarea:focus { border-color: var(--gold); }
+.cc .field select option { background: var(--panel); color: var(--cream); }
+.cc .modal-foot { position: sticky; bottom: 0; display: flex; justify-content: flex-end; gap: 10px; padding: 14px 20px; background: var(--panel2); border-top: 1px solid var(--edge); }
+.cc .btn-ghost { background: none; border: 1px solid var(--edge); border-radius: 10px; color: var(--mut); font-weight: 600; font-size: 12px; padding: 9px 15px; cursor: pointer; }
+.cc .btn-ghost:hover { color: var(--cream); }
+.cc .btn-gold { background: linear-gradient(135deg, var(--gold), #e0821c); border: none; border-radius: 10px; color: #1a140a; font-weight: 700; font-size: 12px; padding: 9px 17px; cursor: pointer; }
+.cc .btn-gold:hover { filter: brightness(1.06); }
+.cc .btn-gold:disabled { opacity: .5; cursor: default; filter: none; }
+
+@media (max-width: 560px) { .cc .modal-body { grid-template-columns: 1fr; } }
+
+/* Shared filter controls (module list/table toolbars). */
+.cc .flabel { font-family: var(--font-plex-mono), monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--dim); }
+.cc .fsel {
+  background: var(--panel2); border: 1px solid var(--edge); border-radius: 9px; color: var(--cream);
+  font-family: var(--font-montserrat), sans-serif; font-size: 12px; padding: 7px 10px; outline: none; cursor: pointer;
+}
+.cc .fsel:focus { border-color: var(--gold); }
+.cc .fsel option { background: var(--panel); color: var(--cream); }
+.cc .filtercount { font-family: var(--font-plex-mono), monospace; font-size: 10px; color: var(--dim); }

@@ -1,0 +1,47 @@
+/* Files view specifics. Shares the cockpit shell (.cc, .panel, .eye, .serif,
+   .navlink) with command-center.css, which this page also imports. */
+
+.cc .crumbs {
+  display: flex; align-items: center; gap: 7px; margin-top: 11px;
+  font-family: var(--font-plex-mono), monospace; font-size: 10px;
+}
+.cc .crumb { display: inline-flex; align-items: center; gap: 5px; color: var(--dim); text-decoration: none; }
+.cc .crumb:hover { color: var(--gold); }
+.cc .crumb.current { color: var(--cream); }
+.cc .crumb-sep { color: var(--dim); flex: none; }
+
+.cc .fgroup-h {
+  font-family: var(--font-plex-mono), monospace; font-size: 9px; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--dim); padding: 13px 15px 7px;
+}
+.cc .filelist { display: flex; flex-direction: column; }
+
+.cc .frow {
+  display: flex; align-items: center; gap: 12px; padding: 11px 15px;
+  border-top: 1px solid var(--edge); text-decoration: none; color: var(--cream);
+  transition: background .14s;
+}
+.cc .filelist .frow:first-child { border-top: none; }
+.cc .frow:hover { background: rgba(245, 181, 49, .05); }
+
+.cc .ficon {
+  width: 34px; height: 34px; border-radius: 9px; flex: none;
+  display: flex; align-items: center; justify-content: center; border: 1px solid var(--edge);
+}
+.cc .ficon.folder { color: var(--gold); background: linear-gradient(135deg, #2e2412, #241c10); }
+.cc .ficon.file { color: var(--mut); background: var(--panel2); }
+
+.cc .fname { flex: 1; font-size: 12.5px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cc .ftype {
+  font-family: var(--font-plex-mono), monospace; font-size: 9px; color: var(--dim);
+  text-transform: uppercase; letter-spacing: .5px; min-width: 74px; text-align: right;
+}
+.cc .fmeta {
+  font-family: var(--font-plex-mono), monospace; font-size: 9.5px; color: var(--dim);
+  min-width: 100px; text-align: right;
+}
+
+@media (max-width: 640px) {
+  .cc .ftype { display: none; }
+  .cc .fmeta { min-width: 0; }
+}

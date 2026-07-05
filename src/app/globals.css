@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+/*
+  PVLE cockpit design tokens (dark "mission control").
+  Colors → Tailwind utilities: bg-bg, bg-panel, border-edge, text-gold, text-cream, text-muted, etc.
+  Fonts  → font-display (Cormorant Garamond), font-body (Montserrat), font-mono (IBM Plex Mono).
+*/
+@theme {
+  --color-bg: #16120c;
+  --color-panel: #201a12;
+  --color-panel2: #251e14;
+  --color-edge: #3a2e1f;
+  --color-gold: #f5b531;
+  --color-cream: #f2e7cf;
+  --color-muted: #b7a688;
+  --color-dim: #8c7b5c;
+  --color-ok: #7fb86a;
+}
+
+@theme inline {
+  --font-display: var(--font-cormorant), ui-serif, Georgia, serif;
+  --font-body: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "IBM Plex Mono", monospace;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-cream);
+  font-family: var(--font-body);
+}
+
+/* Present-mode overlay animations (the overlay is portaled to <body>). */
+@keyframes presentIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes presentRise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.present-root { animation: presentIn 0.28s ease both; }
+.present-rise { animation: presentRise 0.35s ease both; }
+@media (prefers-reduced-motion: reduce) {
+  .present-root, .present-rise { animation: none; }
+}

@@ -1,0 +1,30 @@
+/* Programs — cards grouped by entity. Shares cockpit shell + shared primitives. */
+
+.cc .pgtoolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
+.cc .pgcount { font-family: var(--font-plex-mono), monospace; font-size: 11px; color: var(--mut); }
+.cc .pgcount b { color: var(--gold); font-weight: 600; }
+
+.cc .pgroup { margin-bottom: 22px; }
+.cc .pgroup-h { display: flex; align-items: center; gap: 9px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--edge); }
+.cc .pgroup-dot { width: 9px; height: 9px; border-radius: 50%; flex: none; box-shadow: 0 0 6px currentColor; }
+.cc .pgroup-name { font-family: var(--font-cormorant), serif; font-size: 19px; font-weight: 600; color: var(--cream); }
+.cc .pgroup-count { font-family: var(--font-plex-mono), monospace; font-size: 10px; color: var(--dim); }
+
+.cc .pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+.cc .pgcard {
+  position: relative; background: linear-gradient(180deg, var(--panel2), var(--panel));
+  border: 1px solid var(--edge); border-top-width: 3px; border-radius: 12px; padding: 14px 15px;
+  transition: transform .16s, box-shadow .16s;
+}
+.cc .pgcard:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, .4); }
+.cc .pgcard-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; }
+.cc .pgcard-name { font-family: var(--font-cormorant), serif; font-size: 17px; font-weight: 600; color: var(--cream); line-height: 1.15; }
+.cc .pgcard-actions { display: flex; gap: 2px; flex: none; opacity: 0; transition: opacity .14s; }
+.cc .pgcard:hover .pgcard-actions { opacity: 1; }
+.cc .pgbtn { background: none; border: none; color: var(--dim); cursor: pointer; padding: 4px; border-radius: 7px; display: flex; transition: color .14s, background .14s; }
+.cc .pgbtn:hover { color: var(--gold); background: rgba(245, 181, 49, .08); }
+.cc .pgbtn.danger:hover { color: #f0916a; background: rgba(240, 145, 106, .1); }
+.cc .pgcard-meta { display: flex; align-items: center; gap: 9px; margin-top: 10px; }
+.cc .statuschip { font-family: var(--font-plex-mono), monospace; font-size: 8.5px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; border: 1px solid; white-space: nowrap; }
+.cc .pgcard-cat { font-family: var(--font-plex-mono), monospace; font-size: 9px; color: var(--dim); text-transform: uppercase; letter-spacing: .5px; }
+.cc .pgcard-line { font-size: 11.5px; color: var(--mut); margin-top: 11px; line-height: 1.4; }

@@ -1,0 +1,31 @@
+/* Content — date-grouped calendar view. Shares cockpit shell + shared primitives. */
+
+.cc .cntoolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
+.cc .cnfilters { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.cc .cngroup { margin-bottom: 20px; }
+.cc .cngroup-h { display: flex; align-items: baseline; gap: 10px; margin-bottom: 11px; padding-bottom: 8px; border-bottom: 1px solid var(--edge); }
+.cc .cnweekday { font-family: var(--font-plex-mono), monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); }
+.cc .cndate { font-family: var(--font-cormorant), serif; font-size: 18px; font-weight: 600; color: var(--cream); }
+.cc .cngroup-count { font-family: var(--font-plex-mono), monospace; font-size: 10px; color: var(--dim); margin-left: auto; }
+
+.cc .cngrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: 12px; }
+.cc .cncard {
+  position: relative; background: linear-gradient(180deg, var(--panel2), var(--panel));
+  border: 1px solid var(--edge); border-left-width: 3px; border-radius: 12px; padding: 13px 14px;
+  transition: transform .16s, box-shadow .16s;
+}
+.cc .cncard:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, .4); }
+.cc .cncard-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; min-height: 18px; }
+.cc .cnchannel { font-family: var(--font-plex-mono), monospace; font-size: 8px; letter-spacing: 1px; text-transform: uppercase; color: var(--mut); background: var(--bg); border: 1px solid var(--edge); border-radius: 6px; padding: 3px 6px; white-space: nowrap; }
+.cc .cncard-title { font-size: 13px; font-weight: 600; color: var(--cream); line-height: 1.25; margin-top: 9px; }
+.cc .cncard-meta { display: flex; align-items: center; gap: 9px; margin-top: 12px; flex-wrap: wrap; }
+.cc .cnstatus { font-family: var(--font-plex-mono), monospace; font-size: 8px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; padding: 3px 6px; border-radius: 5px; white-space: nowrap; }
+.cc .cncampaign { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-plex-mono), monospace; font-size: 8.5px; color: var(--dim); overflow: hidden; }
+.cc .cncampaign span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 120px; }
+.cc .cncard-actions { display: flex; gap: 2px; flex: none; opacity: 0; transition: opacity .14s; }
+.cc .cncard:hover .cncard-actions { opacity: 1; }
+.cc .cnbtn { background: none; border: none; color: var(--dim); cursor: pointer; padding: 3px; border-radius: 6px; display: flex; transition: color .14s, background .14s; }
+.cc .cnbtn:hover { color: var(--gold); background: rgba(245, 181, 49, .08); }
+.cc .cnbtn.danger:hover { color: #f0916a; background: rgba(240, 145, 106, .1); }
+.cc .cn-empty { text-align: center; color: var(--dim); padding: 28px; font-size: 12px; }

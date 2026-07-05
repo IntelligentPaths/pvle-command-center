@@ -1,0 +1,30 @@
+/* Tasks — filterable list with focus + done toggles. Shares cockpit shell + primitives. */
+
+.cc .ttoolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+.cc .tfilters { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.cc .tlist { padding: 4px 6px; }
+.cc .trow { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-top: 1px solid var(--edge); transition: background .14s; }
+.cc .tlist .trow:first-child { border-top: none; }
+.cc .trow:hover { background: rgba(245, 181, 49, .04); }
+.cc .trow.done .t-task { color: var(--dim); text-decoration: line-through; }
+
+.cc .tcheck { width: 19px; height: 19px; border-radius: 6px; border: 2px solid #5a4a2c; flex: none; display: flex; align-items: center; justify-content: center; cursor: pointer; background: none; transition: .14s; }
+.cc .tcheck.on { background: var(--ok); border-color: var(--ok); }
+.cc .tcheck:hover { border-color: var(--gold); }
+
+.cc .t-main { flex: 1; min-width: 0; }
+.cc .t-task { font-size: 12.5px; font-weight: 500; color: var(--cream); line-height: 1.3; }
+.cc .t-meta { display: flex; align-items: center; gap: 10px; margin-top: 4px; font-family: var(--font-plex-mono), monospace; font-size: 9px; color: var(--dim); flex-wrap: wrap; }
+
+.cc .tstar { background: none; border: none; cursor: pointer; padding: 3px; display: flex; color: #5a4a2c; flex: none; transition: color .14s; }
+.cc .tstar:hover { color: var(--gold); }
+.cc .tstar.on { color: var(--gold); }
+
+.cc .tstatuschip { font-family: var(--font-plex-mono), monospace; font-size: 8.5px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; border: 1px solid; white-space: nowrap; }
+.cc .t-actions { display: flex; gap: 2px; flex: none; opacity: 0; transition: opacity .14s; }
+.cc .trow:hover .t-actions { opacity: 1; }
+.cc .tbtn { background: none; border: none; color: var(--dim); cursor: pointer; padding: 4px; border-radius: 7px; display: flex; transition: color .14s, background .14s; }
+.cc .tbtn:hover { color: var(--gold); background: rgba(245, 181, 49, .08); }
+.cc .tbtn.danger:hover { color: #f0916a; background: rgba(240, 145, 106, .1); }
+.cc .t-empty { text-align: center; color: var(--dim); padding: 28px; font-size: 12px; }

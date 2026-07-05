@@ -1,0 +1,56 @@
+/* Funding Pipeline kanban — cockpit dark port of reference/PVLE_CRM.jsx.
+   The shell (.cc, .panel, .eye, .serif, .navlink) AND the shared UI primitives
+   (.addbtn, .chip, .edot, .modal*, .field*, .btn-ghost, .btn-gold) come from
+   command-center.css — only pipeline-specific rules live here. */
+
+.cc .pipe-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+.cc .pipe-summary { font-family: var(--font-plex-mono), monospace; font-size: 11px; color: var(--mut); }
+.cc .pipe-summary b { color: var(--gold); font-weight: 600; }
+
+/* ---- board / columns ---- */
+.cc .board { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; align-items: flex-start; }
+.cc .col { width: 240px; flex: none; }
+.cc .col-h { display: flex; align-items: center; justify-content: space-between; padding: 0 4px 8px; }
+.cc .col-name { font-family: var(--font-plex-mono), monospace; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.cc .col-meta { font-family: var(--font-plex-mono), monospace; font-size: 9.5px; color: var(--dim); }
+.cc .col-body {
+  display: flex; flex-direction: column; gap: 9px; min-height: 60px;
+  background: rgba(0, 0, 0, .12); border: 1px solid var(--edge); border-radius: 12px; padding: 9px;
+}
+.cc .col-empty { color: #4a3e29; font-family: var(--font-plex-mono), monospace; font-size: 12px; text-align: center; padding: 10px 0; }
+
+/* ---- cards ---- */
+.cc .pcard {
+  position: relative; background: linear-gradient(180deg, var(--panel2), var(--panel));
+  border: 1px solid var(--edge); border-left-width: 3px; border-radius: 11px; padding: 11px 12px;
+  transition: transform .16s, box-shadow .16s;
+}
+.cc .pcard:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, .4); }
+.cc .pcard-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; }
+.cc .pcard-name { font-size: 12px; font-weight: 600; color: var(--cream); line-height: 1.25; }
+.cc .pcard-edit {
+  flex: none; background: none; border: none; cursor: pointer; color: var(--dim); padding: 2px;
+  opacity: 0; transition: opacity .15s, color .15s; display: flex;
+}
+.cc .pcard:hover .pcard-edit { opacity: 1; }
+.cc .pcard-edit:hover { color: var(--gold); }
+.cc .pcard-funder { font-size: 10.5px; color: var(--mut); margin-top: 3px; }
+.cc .pcard-mid { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: 9px; }
+.cc .pcard-amt { font-family: var(--font-cormorant), serif; font-size: 18px; font-weight: 700; color: var(--gold); line-height: 1; }
+.cc .pcard-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--edge); gap: 8px; }
+/* pipeline cards are narrow (240px) — keep the entity label from pushing the move buttons */
+.cc .pcard-foot .edot { overflow: hidden; min-width: 0; }
+.cc .moves { display: flex; gap: 2px; flex: none; }
+.cc .mbtn { background: none; border: 1px solid var(--edge); border-radius: 7px; color: var(--mut); cursor: pointer; padding: 3px; display: flex; transition: .14s; }
+.cc .mbtn:hover:not(:disabled) { color: var(--gold); border-color: #5a431f; }
+.cc .mbtn:disabled { opacity: .28; cursor: default; }
+
+/* ---- error toast (pipeline-local; other modules use the shared .toast) ---- */
+.cc .pipe-toast {
+  position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 60;
+  display: flex; align-items: center; gap: 12px; max-width: 90vw;
+  background: #3a1e12; color: #f0916a; border: 1px solid #6a3418; border-radius: 12px;
+  padding: 11px 15px; font-size: 12px; box-shadow: 0 10px 28px rgba(0, 0, 0, .5);
+}
+.cc .pipe-toast button { background: none; border: none; color: inherit; cursor: pointer; display: flex; opacity: .8; }
+.cc .pipe-toast button:hover { opacity: 1; }
