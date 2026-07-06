@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Montserrat, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
+import "./auth.css";
+import UserMenu from "@/components/UserMenu";
 
 // Display — headings, hero copy
 const cormorant = Cormorant_Garamond({
@@ -41,6 +43,8 @@ export default function RootLayout({
       className={`${cormorant.variable} ${montserrat.variable} ${plexMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-bg font-body text-cream">
+        {/* Global signed-in app-bar (renders nothing when signed out). */}
+        <UserMenu />
         {children}
       </body>
     </html>

@@ -22,7 +22,9 @@
     radial-gradient(900px 500px at 100% 0%, #241a10 0%, transparent 55%),
     var(--bg);
   color: var(--cream);
-  min-height: 100vh;
+  /* Fill the viewport below the global sign-in app-bar via flex, not a hard 100vh
+     (which would overflow by the bar's height). flex:1 in the flex-col <body> fills it. */
+  min-height: 0;
   flex: 1;
   padding: 26px 28px 34px;
 }
