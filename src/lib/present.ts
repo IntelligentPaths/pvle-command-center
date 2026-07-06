@@ -86,11 +86,23 @@ const ECOSYSTEM_FALLBACK = {
 
 const isEcoId = (id: string) => /^(ecosystem|all|eco)$/i.test((id || "").trim());
 
+// A failed Sheet read (e.g. no credentials at build/runtime) must never throw the
+// page — degrade to an empty list, mirroring dashboard.ts's safeReadTab. The ALL
+// view still works from the hardcoded ecosystem fallback.
+async function safeReadTab(tab: string): Promise<Record<string, string>[]> {
+  try {
+    return await readTab(tab);
+  } catch (e) {
+    console.error(`[present] readTab(${tab}) failed:`, e);
+    return [];
+  }
+}
+
 export async function getPresentData(): Promise<PresentData> {
   const [rawEntities, points, programs] = await Promise.all([
-    readTab("Entities"),
-    readTab("Present_Points"),
-    readTab("Programs"),
+    safeReadTab("Entities"),
+    safeReadTab("Present_Points"),
+    safeReadTab("Programs"),
   ]);
 
   // NLT is never presentable. (It isn't in the Entities tab today — keep it that way.)

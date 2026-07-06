@@ -19,6 +19,10 @@ import "../command-center.css"; // cockpit shell: .cc, .panel, .eye, .serif, .na
 import "./files.css";
 import { listFolder, getFolderMeta, isNltFolder, FOLDER_MIME, type DriveItem } from "@/lib/drive";
 
+// Reads Drive at request time — never prerender at build (needs runtime credentials).
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const ROOT = process.env.GOOGLE_DRIVE_FOLDER_ID!;
 
 // Cache Drive reads for a short window (respect Drive quota), keyed by folder id.

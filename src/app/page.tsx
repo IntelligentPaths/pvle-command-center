@@ -8,8 +8,10 @@ import PresentButton from "@/components/PresentButton";
 import PresentProvider from "@/components/present/PresentProvider";
 import EcosystemZones from "@/components/present/EcosystemZones";
 
-// Read live off the Sheet with a short revalidate window (respect Sheets quota).
-export const revalidate = 60;
+// Reads the Sheet at request time — must NOT prerender at build (no credentials
+// available then). force-dynamic + revalidate 0 → rendered per request.
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 // Server-rendered progress ring (plain SVG — no client JS).
 function Ring({ pct, color, label }: { pct: number; color: string; label: string }) {
