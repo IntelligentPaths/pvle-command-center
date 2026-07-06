@@ -19,7 +19,9 @@ async function resolveAuth() {
   // Keyless: Vercel mints a short-lived OIDC token per request; GCP's STS exchanges it (via the
   // workload identity pool provider) for a federated token that then impersonates the SA.
   if (process.env.VERCEL || process.env.VERCEL_OIDC_TOKEN) {
-    const audience = `https://iam.googleapis.com/projects/${process.env.GCP_PROJECT_NUMBER}/locations/global/workloadIdentityPools/${process.env.GCP_WORKLOAD_IDENTITY_POOL_ID}/providers/${process.env.GCP_WORKLOAD_IDENTITY_POOL_PROVIDER_ID}`;
+    // STS wants the provider's bare resource name — leading "//", NO https: scheme.
+    // (An https:// prefix is rejected: invalid_request "Invalid value for audience".)
+    const audience = `//iam.googleapis.com/projects/${process.env.GCP_PROJECT_NUMBER}/locations/global/workloadIdentityPools/${process.env.GCP_WORKLOAD_IDENTITY_POOL_ID}/providers/${process.env.GCP_WORKLOAD_IDENTITY_POOL_PROVIDER_ID}`;
     const client = ExternalAccountClient.fromJSON({
       type: "external_account",
       audience,
