@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Pencil, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { STAGES, STAGE_COLOR, money, type Opportunity, type Stage } from "@/lib/pipeline";
 import OpportunityModal from "./OpportunityModal";
 
@@ -107,6 +107,32 @@ export default function PipelineBoard({
     }
   }
 
+  // Delete → confirm, optimistic removal, DELETE, roll back on failure (re-inserted at
+  // its original index). Mirrors the shared delete pattern in the other modules.
+  async function remove(o: Opportunity) {
+    if (o.id.startsWith("temp-")) return;
+    if (typeof window !== "undefined" && !window.confirm(`Delete "${o.name}"? This can't be undone.`)) return;
+    const idx = opps.findIndex((x) => x.id === o.id);
+    setOpps((cur) => cur.filter((x) => x.id !== o.id));
+    try {
+      const res = await fetch("/api/pipeline", {
+        method: "DELETE",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ id: o.id }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) throw new Error(data.error || `Delete failed (${res.status})`);
+    } catch (e) {
+      setOpps((cur) => {
+        if (cur.some((x) => x.id === o.id)) return cur;
+        const next = cur.slice();
+        next.splice(idx < 0 ? next.length : idx, 0, o);
+        return next;
+      });
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  }
+
   const blank: Opportunity = {
     id: "",
     name: "",
@@ -154,9 +180,14 @@ export default function PipelineBoard({
                     <div className="pcard" key={o.id} style={{ borderLeftColor: colorOf(o.entity) }}>
                       <div className="pcard-top">
                         <div className="pcard-name">{o.name}</div>
-                        <button className="pcard-edit" aria-label="Edit" onClick={() => setEditing(o)}>
-                          <Pencil size={13} />
-                        </button>
+                        <div className="pcard-actions">
+                          <button className="pcard-edit" aria-label="Edit" onClick={() => setEditing(o)}>
+                            <Pencil size={13} />
+                          </button>
+                          <button className="pcard-edit danger" aria-label="Delete" onClick={() => remove(o)}>
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
                       </div>
                       {o.funder && <div className="pcard-funder">{o.funder}</div>}
                       <div className="pcard-mid">
@@ -198,7 +229,17 @@ export default function PipelineBoard({
       </div>
 
       {editing && (
-        <OpportunityModal initial={editing} entities={entities} onSave={save} onClose={() => setEditing(null)} />
+        <OpportunityModal
+          initial={editing}
+          entities={entities}
+          onSave={save}
+          onClose={() => setEditing(null)}
+          onDelete={() => {
+            const o = editing;
+            if (o) remove(o);
+            setEditing(null);
+          }}
+        />
       )}
       {error && (
         <div className="pipe-toast" role="alert">

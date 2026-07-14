@@ -221,6 +221,8 @@
 .cc .btn-gold { background: linear-gradient(135deg, var(--gold), #e0821c); border: none; border-radius: 10px; color: #1a140a; font-weight: 700; font-size: 12px; padding: 9px 17px; cursor: pointer; }
 .cc .btn-gold:hover { filter: brightness(1.06); }
 .cc .btn-gold:disabled { opacity: .5; cursor: default; filter: none; }
+.cc .btn-danger { background: none; border: 1px solid #6d2f1c; border-radius: 10px; color: #d98166; font-weight: 600; font-size: 12px; padding: 9px 15px; cursor: pointer; }
+.cc .btn-danger:hover { background: #3a1f14; color: #f0b5a0; }
 
 @media (max-width: 560px) { .cc .modal-body { grid-template-columns: 1fr; } }
 

@@ -114,7 +114,7 @@ export default function CampaignsList({
 
   async function remove(c: Campaign) {
     if (c.id.startsWith("temp-")) return;
-    if (typeof window !== "undefined" && !window.confirm(`Delete "${c.name}"?`)) return;
+    if (typeof window !== "undefined" && !window.confirm(`Delete "${c.name}"? This can't be undone.`)) return;
     const idx = campaigns.findIndex((x) => x.id === c.id);
     setCampaigns((cur) => cur.filter((x) => x.id !== c.id));
     try {

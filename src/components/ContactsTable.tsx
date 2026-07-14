@@ -91,7 +91,7 @@ export default function ContactsTable({
 
   async function remove(c: Contact) {
     if (c.id.startsWith("temp-")) return;
-    if (typeof window !== "undefined" && !window.confirm(`Delete "${c.name}"?`)) return;
+    if (typeof window !== "undefined" && !window.confirm(`Delete "${c.name}"? This can't be undone.`)) return;
     const idx = contacts.findIndex((x) => x.id === c.id);
     setContacts((cur) => cur.filter((x) => x.id !== c.id));
     try {

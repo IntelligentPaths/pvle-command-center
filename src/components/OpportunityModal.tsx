@@ -16,11 +16,13 @@ export default function OpportunityModal({
   entities,
   onSave,
   onClose,
+  onDelete,
 }: {
   initial: Opportunity;
   entities: EntityOpt[];
   onSave: (o: Opportunity) => void;
   onClose: () => void;
+  onDelete?: () => void;
 }) {
   const [form, setForm] = useState<Opportunity>(initial);
   const [saving, setSaving] = useState(false);
@@ -109,6 +111,11 @@ export default function OpportunityModal({
         </div>
 
         <div className="modal-foot">
+          {isEdit && onDelete && (
+            <button className="btn-danger" style={{ marginRight: "auto" }} onClick={onDelete}>
+              Delete
+            </button>
+          )}
           <button className="btn-ghost" onClick={onClose}>
             Cancel
           </button>

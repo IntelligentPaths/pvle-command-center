@@ -126,7 +126,7 @@ export default function ContentCalendar({
 
   async function remove(c: ContentPost) {
     if (c.id.startsWith("temp-")) return;
-    if (typeof window !== "undefined" && !window.confirm(`Delete "${c.title}"?`)) return;
+    if (typeof window !== "undefined" && !window.confirm(`Delete "${c.title}"? This can't be undone.`)) return;
     const idx = content.findIndex((x) => x.id === c.id);
     setContent((cur) => cur.filter((x) => x.id !== c.id));
     try {

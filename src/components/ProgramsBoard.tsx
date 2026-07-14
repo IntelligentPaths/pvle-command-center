@@ -96,7 +96,7 @@ export default function ProgramsBoard({
 
   async function remove(p: Program) {
     if (p.id.startsWith("temp-")) return;
-    if (typeof window !== "undefined" && !window.confirm(`Delete "${p.name}"?`)) return;
+    if (typeof window !== "undefined" && !window.confirm(`Delete "${p.name}"? This can't be undone.`)) return;
     const idx = programs.findIndex((x) => x.id === p.id);
     setPrograms((cur) => cur.filter((x) => x.id !== p.id));
     try {

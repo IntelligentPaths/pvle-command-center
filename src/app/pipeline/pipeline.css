@@ -34,6 +34,8 @@
 }
 .cc .pcard:hover .pcard-edit { opacity: 1; }
 .cc .pcard-edit:hover { color: var(--gold); }
+.cc .pcard-actions { display: flex; gap: 2px; flex: none; }
+.cc .pcard-edit.danger:hover { color: #C24B3A; }
 .cc .pcard-funder { font-size: 10.5px; color: var(--mut); margin-top: 3px; }
 .cc .pcard-mid { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: 9px; }
 .cc .pcard-amt { font-family: var(--font-cormorant), serif; font-size: 18px; font-weight: 700; color: var(--gold); line-height: 1; }

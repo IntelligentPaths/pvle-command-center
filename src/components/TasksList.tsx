@@ -126,7 +126,7 @@ export default function TasksList({
 
   async function remove(t: Task) {
     if (t.id.startsWith("temp-")) return;
-    if (typeof window !== "undefined" && !window.confirm(`Delete "${t.task}"?`)) return;
+    if (typeof window !== "undefined" && !window.confirm(`Delete "${t.task}"? This can't be undone.`)) return;
     const idx = tasks.findIndex((x) => x.id === t.id);
     setTasks((cur) => cur.filter((x) => x.id !== t.id));
     try {
