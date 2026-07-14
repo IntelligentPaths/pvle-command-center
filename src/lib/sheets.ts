@@ -65,6 +65,57 @@ export async function appendRow(
   return Object.fromEntries(headers.map((h) => [h, String(record[h] ?? "")]));
 }
 
+// Ensure `tab` has each of `columns` as a header, appending any that are missing to the
+// end of the header row. Non-destructive: existing headers + data cells are untouched.
+// Returns the resulting header list. (Assumes the tab exists — see ensureTab.)
+export async function ensureColumns(tab: string, columns: string[]): Promise<string[]> {
+  const sheets = await getSheets();
+  const headers = await getHeaders(tab);
+  const missing = columns.filter((c) => !headers.includes(c));
+  if (missing.length === 0) return headers;
+  const next = [...headers, ...missing];
+  const startCol = colLetter(headers.length + 1);
+  const endCol = colLetter(next.length);
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: SHEET_ID,
+    range: `${tab}!${startCol}1:${endCol}1`,
+    valueInputOption: "RAW",
+    requestBody: { values: [missing] },
+  });
+  return next;
+}
+
+// Batch-append many rows in ONE call (import-friendly; avoids per-row quota churn).
+// Auto-fills id (per row, if the tab has an id column and the object lacks one) + a
+// batch-unique suffix, and updated_at. Returns the created rows (header-keyed).
+export async function appendRows(
+  tab: string,
+  objs: Record<string, string>[],
+): Promise<Record<string, string>[]> {
+  if (objs.length === 0) return [];
+  const sheets = await getSheets();
+  const headers = await getHeaders(tab);
+  const hasId = headers.includes("id");
+  const hasUpdated = headers.includes("updated_at");
+  const prefix = tab[0].toLowerCase();
+  const stamp = new Date().toISOString();
+  const records = objs.map((obj, i) => {
+    const rec: Record<string, string> = { ...obj };
+    if (hasId && !rec.id) rec.id = newId(prefix) + i.toString(36); // index → unique within the batch
+    if (hasUpdated) rec.updated_at = stamp;
+    return rec;
+  });
+  const values = records.map((rec) => headers.map((h) => String(rec[h] ?? "")));
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: SHEET_ID,
+    range: tab,
+    valueInputOption: "USER_ENTERED",
+    insertDataOption: "INSERT_ROWS",
+    requestBody: { values },
+  });
+  return records.map((rec) => Object.fromEntries(headers.map((h) => [h, String(rec[h] ?? "")])));
+}
+
 // Update the row whose `id` matches. Only patched columns change; the rest are
 // preserved. `updated_at` is refreshed. Throws if the id isn't found.
 export async function updateRowById(

@@ -12,4 +12,5 @@ export interface Contact {
   entity: string;
   notes: string;
   updated_at: string;
+  source?: string; // e.g. "wix-import" (set by the CSV importer); absent for manual adds
 }

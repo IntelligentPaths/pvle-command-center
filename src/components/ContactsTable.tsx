@@ -1,9 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Plus, Pencil, Trash2, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Upload, X } from "lucide-react";
 import { CONTACT_TYPES, type Contact } from "@/lib/contacts";
 import ContactModal from "./ContactModal";
+import ContactsImport from "./ContactsImport";
 
 interface EntityOpt {
   id: string;
@@ -25,6 +26,7 @@ export default function ContactsTable({
   const [error, setError] = useState<string | null>(null);
   const [typeF, setTypeF] = useState("all");
   const [entityF, setEntityF] = useState("all");
+  const [importing, setImporting] = useState(false);
 
   const colorOf = (id: string) => entities.find((e) => e.id === id)?.color ?? FALLBACK;
   const labelOf = (id: string) => entities.find((e) => e.id === id)?.short || id;
@@ -151,9 +153,14 @@ export default function ContactsTable({
             {filtered.length} of {contacts.length}
           </span>
         </div>
-        <button className="addbtn" onClick={() => setEditing(blank)}>
-          <Plus size={16} /> Add contact
-        </button>
+        <div className="ctoolbar-actions">
+          <button className="importbtn" onClick={() => setImporting(true)}>
+            <Upload size={15} /> Import CSV
+          </button>
+          <button className="addbtn" onClick={() => setEditing(blank)}>
+            <Plus size={16} /> Add contact
+          </button>
+        </div>
       </div>
 
       <div className="panel cc-fade ctable">
@@ -222,6 +229,13 @@ export default function ContactsTable({
 
       {editing && (
         <ContactModal initial={editing} entities={entities} onSave={save} onClose={() => setEditing(null)} />
+      )}
+      {importing && (
+        <ContactsImport
+          existing={contacts}
+          onImported={(rows) => setContacts((cur) => [...rows, ...cur])}
+          onClose={() => setImporting(false)}
+        />
       )}
       {error && (
         <div className="toast" role="alert">

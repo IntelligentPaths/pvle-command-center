@@ -31,3 +31,45 @@
 .cc .iconbtn:hover { color: var(--gold); background: rgba(245, 181, 49, .08); }
 .cc .iconbtn.danger:hover { color: #f0916a; background: rgba(240, 145, 106, .1); }
 .cc .c-empty { text-align: center; color: var(--dim); padding: 28px; font-size: 12px; }
+
+/* --- CSV import (multi-step modal) --- */
+.cc .ctoolbar-actions { display: flex; align-items: center; gap: 10px; }
+.cc .importbtn {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--panel2); border: 1px solid var(--edge); border-radius: 11px; color: var(--mut);
+  font-family: var(--font-montserrat), sans-serif; font-weight: 600; font-size: 12px; padding: 9px 14px; cursor: pointer;
+}
+.cc .importbtn:hover { color: var(--gold); border-color: #5a431f; }
+
+.cc .import-modal { max-width: 640px; }
+.cc .import-drop {
+  border: 1.5px dashed #4a3e29; border-radius: 14px; padding: 34px 20px; text-align: center;
+  color: var(--mut); cursor: pointer; transition: border-color .15s, background .15s;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.cc .import-drop:hover { border-color: var(--gold); background: rgba(245, 181, 49, .03); }
+.cc .import-drop-t { font-size: 13px; font-weight: 600; color: var(--cream); }
+.cc .import-drop-s { font-size: 11px; color: var(--dim); max-width: 420px; line-height: 1.5; }
+.cc .import-sub { font-size: 12px; color: var(--mut); margin-bottom: 14px; line-height: 1.5; }
+.cc .import-sub b, .cc .import-note b { color: var(--cream); }
+.cc .import-maps { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; }
+.cc .import-note { font-size: 11px; color: var(--dim); margin-top: 14px; line-height: 1.5; }
+.cc .import-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.cc .import-stat {
+  font-family: var(--font-plex-mono), monospace; font-size: 10px; letter-spacing: .5px; color: var(--mut);
+  background: var(--panel2); border: 1px solid var(--edge); border-radius: 8px; padding: 5px 10px;
+}
+.cc .import-stat.ok { color: #9fce88; border-color: #3d5233; }
+.cc .import-table-wrap { max-height: 320px; overflow: auto; border: 1px solid var(--edge); border-radius: 10px; }
+.cc table.import-table { width: 100%; border-collapse: collapse; }
+.cc table.import-table th {
+  position: sticky; top: 0; background: var(--panel2); text-align: left;
+  font-family: var(--font-plex-mono), monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--dim); padding: 9px 12px; border-bottom: 1px solid var(--edge);
+}
+.cc table.import-table td { padding: 8px 12px; border-top: 1px solid var(--edge); font-size: 12px; color: var(--cream); white-space: nowrap; }
+.cc .import-more { padding: 10px 12px; font-size: 11px; color: var(--dim); }
+.cc .import-done { text-align: center; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.cc .import-done-t { font-family: var(--font-cormorant), serif; font-size: 22px; font-weight: 600; color: var(--cream); }
+.cc .import-done-s { font-size: 12px; color: var(--mut); }
+@media (max-width: 560px) { .cc .import-maps { grid-template-columns: 1fr; } }
