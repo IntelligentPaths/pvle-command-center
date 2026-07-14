@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
 import { STATUS_COLOR, type Program } from "@/lib/programs";
 import ProgramModal from "./ProgramModal";
@@ -162,7 +163,13 @@ export default function ProgramsBoard({
               return (
                 <div className="pgcard" key={p.id} style={{ borderTopColor: g.color }}>
                   <div className="pgcard-top">
-                    <div className="pgcard-name">{p.name}</div>
+                    {p.id.startsWith("temp-") ? (
+                      <div className="pgcard-name">{p.name}</div>
+                    ) : (
+                      <Link href={`/programs/${p.id}`} className="pgcard-name pgcard-link">
+                        {p.name}
+                      </Link>
+                    )}
                     <div className="pgcard-actions">
                       <button className="pgbtn" aria-label="Edit" onClick={() => setEditing(p)}>
                         <Pencil size={13} />

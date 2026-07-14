@@ -19,6 +19,8 @@
 .cc .pgcard:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, .4); }
 .cc .pgcard-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; }
 .cc .pgcard-name { font-family: var(--font-cormorant), serif; font-size: 17px; font-weight: 600; color: var(--cream); line-height: 1.15; }
+.cc a.pgcard-link { text-decoration: none; transition: color .14s; }
+.cc a.pgcard-link:hover { color: var(--gold); }
 .cc .pgcard-actions { display: flex; gap: 2px; flex: none; opacity: 0; transition: opacity .14s; }
 .cc .pgcard:hover .pgcard-actions { opacity: 1; }
 .cc .pgbtn { background: none; border: none; color: var(--dim); cursor: pointer; padding: 4px; border-radius: 7px; display: flex; transition: color .14s, background .14s; }
