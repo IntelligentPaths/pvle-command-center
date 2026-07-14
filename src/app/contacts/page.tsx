@@ -4,18 +4,16 @@ import "../command-center.css"; // cockpit shell + shared UI primitives
 import "./contacts.css";
 import { readTab } from "@/lib/sheets";
 import { isNlt } from "@/lib/nlt";
+import { readEntityOptions } from "@/lib/entities";
 import type { Contact } from "@/lib/contacts";
 import ContactsTable from "@/components/ContactsTable";
 
 export const dynamic = "force-dynamic";
 
 export default async function ContactsPage() {
-  const [rows, entityRows] = await Promise.all([readTab("Contacts"), readTab("Entities")]);
+  const [rows, entities] = await Promise.all([readTab("Contacts"), readEntityOptions()]);
   // NLT stays out of every list.
   const contacts = (rows as unknown as Contact[]).filter((c) => !isNlt(c.entity) && !isNlt(c.org));
-  const entities = entityRows
-    .sort((a, b) => (parseInt(a.order) || 0) - (parseInt(b.order) || 0))
-    .map((e) => ({ id: e.id, name: e.name, short: e.short_name || e.id, color: e.color_primary || "#8C7B5C" }));
 
   return (
     <div className="cc">

@@ -4,22 +4,20 @@ import "../command-center.css"; // cockpit shell + shared UI primitives
 import "./content.css";
 import { readTab } from "@/lib/sheets";
 import { isNlt } from "@/lib/nlt";
+import { readEntityOptions } from "@/lib/entities";
 import type { ContentPost } from "@/lib/content";
 import ContentCalendar from "@/components/ContentCalendar";
 
 export const dynamic = "force-dynamic";
 
 export default async function ContentPage() {
-  const [rows, entityRows, campaignRows] = await Promise.all([
+  const [rows, entities, campaignRows] = await Promise.all([
     readTab("Content"),
-    readTab("Entities"),
+    readEntityOptions(),
     readTab("Campaigns"),
   ]);
   // NLT stays out of every list.
   const content = (rows as unknown as ContentPost[]).filter((c) => !isNlt(c.entity));
-  const entities = entityRows
-    .sort((a, b) => (parseInt(a.order) || 0) - (parseInt(b.order) || 0))
-    .map((e) => ({ id: e.id, name: e.name, short: e.short_name || e.id, color: e.color_primary || "#8C7B5C" }));
   const campaigns = campaignRows
     .filter((c) => !isNlt(c.entity))
     .map((c) => ({ id: c.id, name: c.name }));

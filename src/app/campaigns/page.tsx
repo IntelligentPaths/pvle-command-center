@@ -4,18 +4,16 @@ import "../command-center.css"; // cockpit shell + shared UI primitives
 import "./campaigns.css";
 import { readTab } from "@/lib/sheets";
 import { isNlt } from "@/lib/nlt";
+import { readEntityOptions } from "@/lib/entities";
 import type { Campaign } from "@/lib/campaigns";
 import CampaignsList from "@/components/CampaignsList";
 
 export const dynamic = "force-dynamic";
 
 export default async function CampaignsPage() {
-  const [rows, entityRows] = await Promise.all([readTab("Campaigns"), readTab("Entities")]);
+  const [rows, entities] = await Promise.all([readTab("Campaigns"), readEntityOptions()]);
   // NLT stays out of every list.
   const campaigns = (rows as unknown as Campaign[]).filter((c) => !isNlt(c.entity));
-  const entities = entityRows
-    .sort((a, b) => (parseInt(a.order) || 0) - (parseInt(b.order) || 0))
-    .map((e) => ({ id: e.id, name: e.name, short: e.short_name || e.id, color: e.color_primary || "#8C7B5C" }));
 
   return (
     <div className="cc">
