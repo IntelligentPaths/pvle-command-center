@@ -118,7 +118,7 @@ export default async function CommandCenter() {
         <div className="panel meter">
           <div className="ring-ph">—</div>
           <div>
-            <div className="cap">Founding cohort</div>
+            <div className="cap">Sankofa Legacy School</div>
             <div className="big" style={{ color: "var(--dim)" }}>—</div>
             <span className="ph-tag">Enrollment · no data yet</span>
           </div>
