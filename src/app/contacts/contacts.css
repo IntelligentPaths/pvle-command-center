@@ -22,6 +22,8 @@
 .cc table.contacts tbody tr { transition: background .14s; }
 .cc table.contacts tbody tr:hover { background: rgba(245, 181, 49, .05); }
 .cc .c-name { font-weight: 600; color: var(--cream); }
+.cc a.c-name-link { text-decoration: none; transition: color .14s; }
+.cc a.c-name-link:hover { color: var(--gold); }
 .cc .c-sub { color: var(--mut); }
 .cc .c-link { color: var(--mut); text-decoration: none; }
 .cc .c-link:hover { color: var(--gold); }

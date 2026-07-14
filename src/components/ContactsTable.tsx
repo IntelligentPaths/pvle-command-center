@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { Plus, Pencil, Trash2, Upload, X } from "lucide-react";
 import { CONTACT_TYPES, type Contact } from "@/lib/contacts";
 import ContactModal from "./ContactModal";
@@ -181,7 +182,13 @@ export default function ContactsTable({
             {filtered.map((c) => (
               <tr key={c.id}>
                 <td>
-                  <span className="c-name">{c.name}</span>
+                  {c.id.startsWith("temp-") ? (
+                    <span className="c-name">{c.name}</span>
+                  ) : (
+                    <Link href={`/contacts/${c.id}`} className="c-name c-name-link">
+                      {c.name}
+                    </Link>
+                  )}
                 </td>
                 <td className="c-sub">{c.role || "—"}</td>
                 <td className="c-sub">{c.org || "—"}</td>

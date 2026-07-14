@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { LayoutDashboard, ChevronLeft } from "lucide-react";
 import "../../command-center.css";
 import "../programs.css";
-import "./detail.css";
+import "../../detail.css";
 import { readTab } from "@/lib/sheets";
 import { ensureRelationalSchema, ENROLLMENTS_TAB } from "@/lib/schema";
 import { readEntityOptions } from "@/lib/entities";

@@ -1,4 +1,4 @@
-/* Program & contact detail views — cockpit shell + shared primitives, plus detail bits. */
+/* Shared detail views (Program + Contact) — cockpit shell + shared primitives, plus bits. */
 
 .cc .crumbs { display: flex; align-items: center; gap: 6px; margin-top: 9px; }
 .cc .crumb { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-plex-mono), monospace; font-size: 10px; color: var(--dim); text-decoration: none; }
@@ -11,13 +11,27 @@
 .cc .iconbtn:hover { color: var(--gold); border-color: #5a431f; }
 .cc .iconbtn.danger:hover { color: #f0916a; border-color: #6d2f1c; background: rgba(240, 145, 106, .08); }
 
+/* status pill (shared with programs.css; defined here so the contact detail has it too) */
+.cc .statuschip { font-family: var(--font-plex-mono), monospace; font-size: 8.5px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; border: 1px solid; white-space: nowrap; }
+
+/* meta card (shared) */
 .cc .pd-meta { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; padding: 16px 18px; margin-bottom: 14px; border-top-width: 3px; }
-.cc .pd-meta-main { min-width: 0; }
+.cc .pd-meta-main { min-width: 0; flex: 1; }
 .cc .pd-badges { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .cc .pd-cat { font-family: var(--font-plex-mono), monospace; font-size: 9.5px; letter-spacing: .5px; color: var(--dim); text-transform: uppercase; }
 .cc .pd-line { font-size: 13px; color: var(--cream); margin-top: 10px; }
 .cc .pd-desc { font-size: 12px; color: var(--mut); margin-top: 6px; line-height: 1.5; }
 
+/* contact meta fields */
+.cc .cd-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px 22px; margin-top: 12px; }
+.cc .cd-field { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.cc .cd-flabel { font-family: var(--font-plex-mono), monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--dim); }
+.cc .cd-fval { font-size: 12.5px; color: var(--cream); overflow-wrap: anywhere; }
+.cc .cd-fval a { color: var(--mut); text-decoration: none; }
+.cc .cd-fval a:hover { color: var(--gold); }
+@media (max-width: 560px) { .cc .cd-fields { grid-template-columns: 1fr; } }
+
+/* stats (program) */
 .cc .pd-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
 .cc .pd-stat { padding: 14px 15px; }
 .cc .pd-stat-cap { font-size: 9.5px; letter-spacing: 1px; text-transform: uppercase; color: var(--dim); font-family: var(--font-plex-mono), monospace; }
@@ -28,6 +42,7 @@
 .cc .pd-bar i { display: block; height: 100%; border-radius: 4px; transition: width .4s ease; }
 .cc .pd-stat-sub { font-size: 10px; color: var(--mut); margin-top: 4px; }
 
+/* roster / enrollment list (shared) */
 .cc .pd-roster { padding: 16px 18px; }
 .cc .pd-picker { border: 1px solid var(--edge); border-radius: 12px; padding: 10px; margin: 12px 0; background: var(--panel2); }
 .cc .pd-search { display: flex; align-items: center; gap: 8px; color: var(--dim); padding: 0 6px 8px; border-bottom: 1px solid var(--edge); }
