@@ -2,6 +2,8 @@
 // Read-only for now — writes arrive with the Pipeline module.
 import { readTab } from "./sheets";
 import { isNlt } from "./nlt";
+import { statsForProgram, money, type Enrollment } from "./enrollments";
+import type { Program } from "./programs";
 
 type Row = Record<string, string>;
 
@@ -33,6 +35,23 @@ export interface AttentionItem {
   chip: string;
   hot: boolean;
 }
+export interface ProgramRollupRow {
+  id: string;
+  name: string;
+  entityShort: string;
+  entityColor: string;
+  active: number;
+  mrr: number;
+  mrrLabel: string;
+}
+export interface ProgramsRollup {
+  totalActive: number;
+  mrr: number;
+  mrrLabel: string;
+  annual: number;
+  annualLabel: string;
+  rows: ProgramRollupRow[];
+}
 export interface DashboardData {
   zones: Zone[];
   focus: FocusTask[];
@@ -41,6 +60,7 @@ export interface DashboardData {
   contentReady: { ready: number; total: number };
   funding: { totalLabel: string; activeCount: number; awaitingCount: number };
   attention: AttentionItem[];
+  programs: ProgramsRollup;
   stats: { opps: number; attention: number; posts: number };
 }
 
@@ -86,13 +106,16 @@ async function safeReadTab(tab: string): Promise<Row[]> {
 }
 
 export async function getDashboardData(): Promise<DashboardData> {
-  const [rawEntities, rawTasks, rawContent, rawPipeline, rawEvents] = await Promise.all([
-    safeReadTab("Entities"),
-    safeReadTab("Tasks"),
-    safeReadTab("Content"),
-    safeReadTab("Pipeline"),
-    safeReadTab("Events"),
-  ]);
+  const [rawEntities, rawTasks, rawContent, rawPipeline, rawEvents, rawPrograms, rawEnrollments] =
+    await Promise.all([
+      safeReadTab("Entities"),
+      safeReadTab("Tasks"),
+      safeReadTab("Content"),
+      safeReadTab("Pipeline"),
+      safeReadTab("Events"),
+      safeReadTab("Programs"),
+      safeReadTab("Enrollments"), // may not exist yet → [] (graceful)
+    ]);
 
   // NLT is internal-only — never render it in any list, map, or meter. Filter it
   // out at the source (defense-in-depth) so every derived panel below is NLT-free.
@@ -183,6 +206,35 @@ export async function getDashboardData(): Promise<DashboardData> {
       return { id: e.id, title: e.title, chip, hot };
     });
 
+  // Programs rollup ← Programs + Enrollments (live revenue; NLT-free). The Enrollments tab
+  // may not exist yet → empty rollup. Names/entities resolve at read time (referential by id).
+  const programsList = rawPrograms.filter((p) => !isNlt(p.entity) && !isNlt(p.name));
+  const enrollments = rawEnrollments as unknown as Enrollment[];
+  const progRows: ProgramRollupRow[] = programsList
+    .map((p) => {
+      const st = statsForProgram(p as unknown as Program, enrollments);
+      const ent = entities.find((e) => e.id === p.entity);
+      return {
+        id: p.id,
+        name: p.name,
+        entityShort: ent?.short_name || p.entity || "—",
+        entityColor: ent?.color_primary || MUTED,
+        active: st.activeCount,
+        mrr: st.mrr,
+        mrrLabel: money(st.mrr),
+      };
+    })
+    .sort((a, b) => b.mrr - a.mrr || b.active - a.active);
+  const totalMrr = progRows.reduce((s, r) => s + r.mrr, 0);
+  const programs: ProgramsRollup = {
+    totalActive: progRows.reduce((s, r) => s + r.active, 0),
+    mrr: totalMrr,
+    mrrLabel: money(totalMrr),
+    annual: totalMrr * 12,
+    annualLabel: money(totalMrr * 12),
+    rows: progRows,
+  };
+
   return {
     zones,
     focus,
@@ -191,6 +243,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     contentReady,
     funding,
     attention,
+    programs,
     stats: { opps: activeDeals.length, attention: events.length, posts: contentItems.length },
   };
 }

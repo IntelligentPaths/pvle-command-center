@@ -114,22 +114,18 @@ export default async function CommandCenter() {
 
       {/* Meters */}
       <div className="meters cc-fade">
-        {/* Placeholders — enrollment isn't in the Sheet yet. TODO: wire real counts. */}
-        <div className="panel meter">
-          <div className="ring-ph">—</div>
-          <div>
-            <div className="cap">Sankofa Legacy School</div>
-            <div className="big" style={{ color: "var(--dim)" }}>—</div>
-            <span className="ph-tag">Enrollment · no data yet</span>
+        {/* Enrollment + revenue — live from Programs × Enrollments */}
+        <div className="panel meter" style={{ display: "block" }}>
+          <div className="cap">Active enrollments</div>
+          <div className="big">{d.programs.totalActive}</div>
+          <div className="sub">
+            across {d.programs.rows.length} {d.programs.rows.length === 1 ? "program" : "programs"}
           </div>
         </div>
-        <div className="panel meter">
-          <div className="ring-ph">—</div>
-          <div>
-            <div className="cap">After-school</div>
-            <div className="big" style={{ color: "var(--dim)" }}>—</div>
-            <span className="ph-tag">Enrollment · no data yet</span>
-          </div>
+        <div className="panel meter" style={{ display: "block" }}>
+          <div className="cap">Monthly recurring</div>
+          <div className="big" style={{ color: "var(--gold)" }}>{d.programs.mrrLabel}</div>
+          <div className="sub">{d.programs.annualLabel} projected / yr</div>
         </div>
 
         {/* Funding in play — live from Pipeline */}
@@ -154,6 +150,44 @@ export default async function CommandCenter() {
           </div>
         </div>
       </div>
+
+      {/* Programs & revenue — per-program breakdown (NLT-free) */}
+      {d.programs.rows.length > 0 && (
+        <div className="panel cc-fade prog-panel">
+          <div className="sect-h">
+            <div className="t">
+              <BookOpen size={18} color="#F5B531" /> Programs &amp; revenue
+            </div>
+            <Link href="/programs" className="link">
+              All programs <ChevronRight size={13} />
+            </Link>
+          </div>
+          <div className="prog-summary">
+            <span>
+              <b>{d.programs.totalActive}</b> active enrollments
+            </span>
+            <span>
+              <b>{d.programs.mrrLabel}</b> MRR
+            </span>
+            <span>
+              <b>{d.programs.annualLabel}</b> projected / yr
+            </span>
+          </div>
+          <div className="prog-rows">
+            {d.programs.rows.map((p) => (
+              <Link key={p.id} href={`/programs/${p.id}`} className="prog-row">
+                <span className="prog-dot" style={{ background: p.entityColor }} />
+                <span className="prog-name">{p.name}</span>
+                <span className="prog-ent">{p.entityShort}</span>
+                <span className="prog-active">
+                  {p.active} {p.active === 1 ? "enrolled" : "enrolled"}
+                </span>
+                <span className="prog-mrr">{p.mrrLabel}/mo</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Main grid */}
       <div className="grid">
