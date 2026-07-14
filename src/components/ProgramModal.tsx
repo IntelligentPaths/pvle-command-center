@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import { PROGRAM_STATUSES, PROGRAM_CATEGORIES, type Program } from "@/lib/programs";
+import { PROGRAM_STATUSES, PROGRAM_CATEGORIES, RATE_PERIODS, RATE_PERIOD_LABEL, type Program } from "@/lib/programs";
 
 interface EntityOpt {
   id: string;
@@ -85,6 +85,37 @@ export default function ProgramModal({
                 </option>
               ))}
             </select>
+          </div>
+          <div className="field">
+            <label>Rate ($)</label>
+            <input
+              type="number"
+              inputMode="numeric"
+              value={form.rate_amount}
+              onChange={(e) => set("rate_amount", e.target.value)}
+              placeholder="—"
+            />
+          </div>
+          <div className="field">
+            <label>Rate period</label>
+            <select value={form.rate_period} onChange={(e) => set("rate_period", e.target.value)}>
+              <option value="">—</option>
+              {RATE_PERIODS.map((p) => (
+                <option key={p} value={p}>
+                  {RATE_PERIOD_LABEL[p] ?? p}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <label>Capacity</label>
+            <input
+              type="number"
+              inputMode="numeric"
+              value={form.capacity}
+              onChange={(e) => set("capacity", e.target.value)}
+              placeholder="—"
+            />
           </div>
           <div className="field wide">
             <label>One-liner</label>

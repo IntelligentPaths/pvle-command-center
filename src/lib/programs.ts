@@ -10,13 +10,27 @@ export const STATUS_COLOR: Record<string, string> = {
   Planned: "#B7A688",
 };
 
+// Rate period (the spec's rate_period). Blank = no rate set (informational program).
+export const RATE_PERIODS = ["one_time", "monthly", "session", "annual"] as const;
+export type RatePeriod = (typeof RATE_PERIODS)[number];
+export const RATE_PERIOD_LABEL: Record<string, string> = {
+  one_time: "one-time",
+  monthly: "/ mo",
+  session: "/ session",
+  annual: "/ yr",
+};
+
 export interface Program {
   id: string;
   name: string;
   entity: string;
-  category: string;
+  category: string; // program type (Product / Program / School) — the spec's "type"
   status: string;
   one_liner: string;
   description: string;
   notes: string;
+  rate_amount: string;
+  rate_period: string; // one of RATE_PERIODS (or "")
+  capacity: string;
+  created_at: string;
 }

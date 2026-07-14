@@ -62,6 +62,9 @@ export default function ProgramsBoard({
     one_liner: p.one_liner,
     description: p.description,
     notes: p.notes,
+    rate_amount: p.rate_amount,
+    rate_period: p.rate_period,
+    capacity: p.capacity,
   });
 
   async function save(form: Program) {
@@ -127,6 +130,10 @@ export default function ProgramsBoard({
     one_liner: "",
     description: "",
     notes: "",
+    rate_amount: "",
+    rate_period: "",
+    capacity: "",
+    created_at: "",
   };
 
   const entityCount = groups.filter((g) => g.id !== "__unknown__").length;

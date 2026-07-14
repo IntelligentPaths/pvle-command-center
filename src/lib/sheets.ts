@@ -85,6 +85,32 @@ export async function ensureColumns(tab: string, columns: string[]): Promise<str
   return next;
 }
 
+// Ensure a tab exists with the given header row. If absent, creates the sheet + writes
+// headers; if present, ensures each header column exists (non-destructive). Used to spin
+// up the relational tabs (Programs extensions, Enrollments, Attachments) on demand.
+export async function ensureTab(tab: string, headers: string[]): Promise<void> {
+  const sheets = await getSheets();
+  const meta = await sheets.spreadsheets.get({
+    spreadsheetId: SHEET_ID,
+    fields: "sheets(properties(title))",
+  });
+  const exists = meta.data.sheets?.some((s) => s.properties?.title === tab);
+  if (!exists) {
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId: SHEET_ID,
+      requestBody: { requests: [{ addSheet: { properties: { title: tab } } }] },
+    });
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: SHEET_ID,
+      range: `${tab}!A1`,
+      valueInputOption: "RAW",
+      requestBody: { values: [headers] },
+    });
+    return;
+  }
+  await ensureColumns(tab, headers);
+}
+
 // Batch-append many rows in ONE call (import-friendly; avoids per-row quota churn).
 // Auto-fills id (per row, if the tab has an id column and the object lacks one) + a
 // batch-unique suffix, and updated_at. Returns the created rows (header-keyed).
