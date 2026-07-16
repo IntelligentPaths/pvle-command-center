@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { CONTENT_STATUSES, CONTENT_CHANNELS, type ContentPost } from "@/lib/content";
+import AttachmentsSection from "./AttachmentsSection";
 
 interface EntityOpt {
   id: string;
@@ -124,6 +125,11 @@ export default function ContentModal({
             <label>Copy</label>
             <textarea value={form.copy} rows={3} onChange={(e) => set("copy", e.target.value)} />
           </div>
+          {isEdit && (
+            <div style={{ gridColumn: "1 / -1" }}>
+              <AttachmentsSection parentType="content" parentId={form.id} />
+            </div>
+          )}
         </div>
 
         <div className="modal-foot">

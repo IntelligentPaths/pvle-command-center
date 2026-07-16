@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { CAMPAIGN_OBJECTIVES, CAMPAIGN_STATUSES, type Campaign } from "@/lib/campaigns";
+import AttachmentsSection from "./AttachmentsSection";
 
 interface EntityOpt {
   id: string;
@@ -110,6 +111,11 @@ export default function CampaignModal({
             <label>Notes</label>
             <textarea value={form.notes} rows={2} onChange={(e) => set("notes", e.target.value)} />
           </div>
+          {isEdit && (
+            <div style={{ gridColumn: "1 / -1" }}>
+              <AttachmentsSection parentType="campaign" parentId={form.id} />
+            </div>
+          )}
         </div>
 
         <div className="modal-foot">

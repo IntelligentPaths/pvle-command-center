@@ -14,8 +14,9 @@ export interface Attachment {
   created_at: string;
 }
 
-// Which detail surface an attachments block lives on → the /attachments/{module}/ subfolder.
-export type ParentType = "opportunity" | "contact" | "program";
+// Which detail surface an attachments block lives on → the /attachments/{parent_type}/
+// subfolder. Any record detail (page or edit modal) can carry attachments.
+export type ParentType = "opportunity" | "contact" | "program" | "campaign" | "task" | "content";
 
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10 MB
 
