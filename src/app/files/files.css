@@ -56,3 +56,5 @@
 .cc .fbtn { background: none; border: 1px solid var(--edge); color: var(--dim); cursor: pointer; padding: 6px; border-radius: 8px; display: inline-flex; text-decoration: none; transition: color .14s, border-color .14s, background .14s; }
 .cc .fbtn:hover { color: var(--gold); border-color: #5a431f; }
 .cc .fbtn.danger:hover { color: #f0916a; border-color: #6d2f1c; background: rgba(240, 145, 106, .08); }
+.cc .flink-chip { display: inline-flex; align-items: center; gap: 4px; flex: none; font-family: var(--font-plex-mono), monospace; font-size: 9px; letter-spacing: .3px; color: var(--dim); background: var(--panel2); border: 1px solid var(--edge); border-radius: 20px; padding: 3px 8px; text-decoration: none; max-width: 170px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cc .flink-chip:hover { color: var(--gold); border-color: #5a431f; }

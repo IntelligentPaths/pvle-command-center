@@ -16,6 +16,7 @@ import {
   Download,
   ExternalLink,
   Trash2,
+  Link2,
   X,
 } from "lucide-react";
 import { ACCEPT_ATTR, MAX_UPLOAD_BYTES, isAllowedFile } from "@/lib/attachments";
@@ -70,10 +71,12 @@ export default function FilesPanel({
   folders,
   files,
   folderId,
+  linkByFileId = {},
 }: {
   folders: DriveItem[];
   files: DriveItem[];
   folderId: string;
+  linkByFileId?: Record<string, { name: string; href: string }>;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -189,6 +192,11 @@ export default function FilesPanel({
                 <span className="fname">{f.name}</span>
                 <span className="ftype">{typeLabel(f.mimeType)}</span>
                 <span className="fmeta">{fmtDate(f.modifiedTime)}</span>
+                {linkByFileId[f.id] && (
+                  <Link className="flink-chip" href={linkByFileId[f.id].href} title={`Linked to ${linkByFileId[f.id].name}`}>
+                    <Link2 size={11} /> {linkByFileId[f.id].name}
+                  </Link>
+                )}
                 <span className="frow-actions">
                   {isGoogleNative(f.mimeType) ? (
                     f.webViewLink && (
