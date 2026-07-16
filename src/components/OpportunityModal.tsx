@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { STAGES, OPPORTUNITY_TYPES, type Opportunity } from "@/lib/pipeline";
+import AttachmentsSection from "./AttachmentsSection";
 
 interface EntityOpt {
   id: string;
@@ -108,6 +109,11 @@ export default function OpportunityModal({
             <label>Notes</label>
             <textarea value={form.notes} rows={2} onChange={(e) => set("notes", e.target.value)} />
           </div>
+          {isEdit && (
+            <div style={{ gridColumn: "1 / -1" }}>
+              <AttachmentsSection parentType="opportunity" parentId={form.id} />
+            </div>
+          )}
         </div>
 
         <div className="modal-foot">

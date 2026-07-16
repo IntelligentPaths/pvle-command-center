@@ -15,6 +15,7 @@ import {
 } from "@/lib/enrollments";
 import type { Contact } from "@/lib/contacts";
 import ProgramModal from "./ProgramModal";
+import AttachmentsSection from "./AttachmentsSection";
 
 interface EntityOpt {
   id: string;
@@ -287,6 +288,8 @@ export default function ProgramDetail({
           </div>
         )}
       </div>
+
+      <AttachmentsSection parentType="program" parentId={program.id} />
 
       {editing && (
         <ProgramModal

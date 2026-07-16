@@ -13,6 +13,7 @@ import {
   type Enrollment,
 } from "@/lib/enrollments";
 import ContactModal from "./ContactModal";
+import AttachmentsSection from "./AttachmentsSection";
 
 interface EntityOpt {
   id: string;
@@ -250,6 +251,8 @@ export default function ContactDetail({
           </div>
         )}
       </div>
+
+      <AttachmentsSection parentType="contact" parentId={contact.id} />
 
       {editing && (
         <ContactModal initial={editing} entities={entities} onSave={saveContact} onClose={() => setEditing(null)} />

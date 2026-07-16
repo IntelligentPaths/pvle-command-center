@@ -1,0 +1,40 @@
+/* Attachments block — self-contained so it styles correctly on the program/contact
+   detail pages AND inside the pipeline OpportunityModal (which don't share detail.css). */
+
+.cc .att-panel {
+  background: var(--panel2);
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-top: 14px;
+}
+.cc .att-drop {
+  border: 1.5px dashed #4a3e29;
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--dim);
+  cursor: pointer;
+  margin: 10px 0;
+  transition: border-color .15s, background .15s;
+}
+.cc .att-drop:hover { border-color: var(--gold); background: rgba(245, 181, 49, .03); }
+.cc .att-list { display: flex; flex-direction: column; }
+.cc .att-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid var(--edge); }
+.cc .att-row:first-child { border-top: none; }
+.cc .att-name {
+  font-size: 12.5px; font-weight: 600; color: var(--cream);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; flex: none;
+}
+.cc .att-meta {
+  font-family: var(--font-plex-mono), monospace; font-size: 9.5px; color: var(--dim);
+  margin-right: auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cc .att-btn {
+  background: none; border: 1px solid var(--edge); color: var(--dim); cursor: pointer; padding: 6px;
+  border-radius: 8px; display: inline-flex; flex: none; text-decoration: none;
+  transition: color .14s, border-color .14s, background .14s;
+}
+.cc .att-btn:hover { color: var(--gold); border-color: #5a431f; }
+.cc .att-btn.danger:hover { color: #f0916a; border-color: #6d2f1c; background: rgba(240, 145, 106, .08); }
