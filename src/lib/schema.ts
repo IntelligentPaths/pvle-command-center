@@ -4,6 +4,7 @@ import { ensureTab } from "./sheets";
 
 export const PROGRAMS_TAB = "Programs";
 export const ENROLLMENTS_TAB = "Enrollments";
+export const ATTACHMENTS_TAB = "Attachments";
 
 // Programs keeps its existing columns; the last four are added by this migration.
 // (The spec's "type" is the existing `category` column — see CLAUDE.md.)
@@ -18,6 +19,11 @@ export const ENROLLMENTS_HEADERS = [
   "start_date", "end_date", "rate_override", "notes", "created_at",
 ];
 
+export const ATTACHMENTS_HEADERS = [
+  "id", "parent_type", "parent_id", "drive_file_id",
+  "filename", "mime", "size", "uploaded_by", "created_at",
+];
+
 // Idempotent; the resolved promise is cached per server instance (retried on failure).
 let ensured: Promise<void> | null = null;
 export function ensureRelationalSchema(): Promise<void> {
@@ -25,6 +31,7 @@ export function ensureRelationalSchema(): Promise<void> {
     ensured = (async () => {
       await ensureTab(PROGRAMS_TAB, PROGRAMS_HEADERS);
       await ensureTab(ENROLLMENTS_TAB, ENROLLMENTS_HEADERS);
+      await ensureTab(ATTACHMENTS_TAB, ATTACHMENTS_HEADERS);
     })().catch((e) => {
       ensured = null;
       throw e;

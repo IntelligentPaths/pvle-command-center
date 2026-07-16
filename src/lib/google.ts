@@ -11,7 +11,11 @@ import { getVercelOidcToken } from "@vercel/oidc";
 
 const SCOPES = [
   "https://www.googleapis.com/auth/spreadsheets",
-  "https://www.googleapis.com/auth/drive.readonly",
+  // Broadened from drive.readonly → drive so the SA can create/delete attachment files
+  // (SA-owned, under /attachments/{module}/ in the Command Center folder, which the SA
+  // has Editor on). Prod/preview (WIF) mints this scope automatically; local ADC would
+  // need re-auth with it. The Files browser still only reads.
+  "https://www.googleapis.com/auth/drive",
 ];
 
 async function resolveAuth() {
