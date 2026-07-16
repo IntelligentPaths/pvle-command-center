@@ -4,8 +4,13 @@
 // under /attachments/{module}/ in the Command Center folder.
 import { Readable } from "node:stream";
 import { getDrive } from "./google";
+import { FOLDER_MIME } from "./driveShared";
+import type { DriveItem } from "./driveShared";
 
-export const FOLDER_MIME = "application/vnd.google-apps.folder";
+// Re-export the client-safe types/constants so existing `@/lib/drive` consumers keep working.
+export { FOLDER_MIME };
+export type { DriveItem };
+
 const ROOT_FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID!;
 const ATTACHMENTS_FOLDER = "attachments";
 
@@ -18,34 +23,40 @@ export function isNltFolder(name: string): boolean {
   return NLT_NAME.test(name);
 }
 
-export interface DriveItem {
-  id: string;
-  name: string;
-  mimeType: string;
-  webViewLink?: string;
-  iconLink?: string;
-  modifiedTime?: string;
-}
-
 // List the children of a folder: folders first, then files, each A→Z.
 export async function listFolder(folderId: string): Promise<DriveItem[]> {
   const drive = await getDrive();
   const res = await drive.files.list({
     q: `'${folderId}' in parents and trashed=false`,
-    fields: "files(id,name,mimeType,webViewLink,iconLink,modifiedTime)",
+    fields: "files(id,name,mimeType,webViewLink,iconLink,modifiedTime,ownedByMe)",
     orderBy: "folder,name",
     pageSize: 200,
   });
   return (res.data.files ?? [])
     .filter((f) => !NLT_NAME.test(f.name ?? ""))
     .map((f) => ({
-    id: f.id ?? "",
-    name: f.name ?? "(untitled)",
-    mimeType: f.mimeType ?? "",
-    webViewLink: f.webViewLink ?? undefined,
-    iconLink: f.iconLink ?? undefined,
-    modifiedTime: f.modifiedTime ?? undefined,
-  }));
+      id: f.id ?? "",
+      name: f.name ?? "(untitled)",
+      mimeType: f.mimeType ?? "",
+      webViewLink: f.webViewLink ?? undefined,
+      iconLink: f.iconLink ?? undefined,
+      modifiedTime: f.modifiedTime ?? undefined,
+      ownedByMe: f.ownedByMe ?? false,
+    }));
+}
+
+// Minimal info for guarding file actions (ownership + NLT check).
+export async function getFileInfo(
+  fileId: string,
+): Promise<{ id: string; name: string; mimeType: string; ownedByMe: boolean }> {
+  const drive = await getDrive();
+  const res = await drive.files.get({ fileId, fields: "id,name,mimeType,ownedByMe" });
+  return {
+    id: res.data.id ?? fileId,
+    name: res.data.name ?? "",
+    mimeType: res.data.mimeType ?? "",
+    ownedByMe: res.data.ownedByMe ?? false,
+  };
 }
 
 // Metadata for a single file/folder — used for the breadcrumb's current name.

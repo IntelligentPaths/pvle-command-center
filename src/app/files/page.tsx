@@ -1,76 +1,17 @@
-import type { ReactElement } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { unstable_cache } from "next/cache";
-import {
-  Folder,
-  File,
-  FileText,
-  FileSpreadsheet,
-  FileImage,
-  FileVideo,
-  FileAudio,
-  Presentation,
-  Home,
-  ChevronRight,
-  LayoutDashboard,
-} from "lucide-react";
+import { Folder, Home, ChevronRight, LayoutDashboard } from "lucide-react";
 import "../command-center.css"; // cockpit shell: .cc, .panel, .eye, .serif, .navlink
 import "./files.css";
 import { listFolder, getFolderMeta, isNltFolder, FOLDER_MIME, type DriveItem } from "@/lib/drive";
+import FilesPanel from "@/components/FilesPanel";
 
-// Reads Drive at request time — never prerender at build (needs runtime credentials).
+// Reads Drive fresh at request time (never prerendered; needs runtime credentials). Not
+// cached, so an upload/delete + router.refresh() shows the change immediately.
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 const ROOT = process.env.GOOGLE_DRIVE_FOLDER_ID!;
-
-// Cache Drive reads for a short window (respect Drive quota), keyed by folder id.
-const cachedList = unstable_cache((folderId: string) => listFolder(folderId), ["drive-list"], { revalidate: 60 });
-const cachedMeta = unstable_cache((folderId: string) => getFolderMeta(folderId), ["drive-meta"], { revalidate: 60 });
-
-function typeLabel(mime: string): string {
-  if (mime === FOLDER_MIME) return "Folder";
-  if (mime.includes("google-apps.document")) return "Google Doc";
-  if (mime.includes("google-apps.spreadsheet")) return "Google Sheet";
-  if (mime.includes("google-apps.presentation")) return "Slides";
-  if (mime.includes("google-apps.form")) return "Form";
-  if (mime === "application/pdf") return "PDF";
-  if (mime.startsWith("image/")) return "Image";
-  if (mime.startsWith("video/")) return "Video";
-  if (mime.startsWith("audio/")) return "Audio";
-  if (mime.includes("wordprocessing") || mime === "application/msword") return "Word";
-  if (mime.includes("spreadsheetml") || mime === "application/vnd.ms-excel") return "Excel";
-  if (mime.startsWith("text/")) return "Text";
-  return "File";
-}
-
-function iconFor(mime: string): ReactElement {
-  const p = { size: 18 };
-  if (mime === FOLDER_MIME) return <Folder {...p} />;
-  if (mime.includes("spreadsheet") || mime === "application/vnd.ms-excel") return <FileSpreadsheet {...p} />;
-  if (mime.includes("presentation") || mime.includes("powerpoint")) return <Presentation {...p} />;
-  if (mime.startsWith("image/")) return <FileImage {...p} />;
-  if (mime.startsWith("video/")) return <FileVideo {...p} />;
-  if (mime.startsWith("audio/")) return <FileAudio {...p} />;
-  if (
-    mime.includes("document") ||
-    mime.includes("wordprocessing") ||
-    mime === "application/pdf" ||
-    mime === "application/msword" ||
-    mime.startsWith("text/")
-  ) {
-    return <FileText {...p} />;
-  }
-  return <File {...p} />;
-}
-
-function fmtDate(iso?: string): string {
-  if (!iso) return "";
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-}
 
 export default async function FilesPage({
   searchParams,
@@ -89,7 +30,7 @@ export default async function FilesPage({
   if (!isRoot) {
     let name: string | null = null;
     try {
-      name = (await cachedMeta(folderId)).name || null;
+      name = (await getFolderMeta(folderId)).name || null;
     } catch {
       name = null;
     }
@@ -100,7 +41,7 @@ export default async function FilesPage({
   let items: DriveItem[] = [];
   let error: string | null = null;
   try {
-    items = await cachedList(folderId);
+    items = await listFolder(folderId);
   } catch (e) {
     error = e instanceof Error ? e.message : String(e);
   }
@@ -140,47 +81,8 @@ export default async function FilesPage({
       <div className="panel cc-fade" style={{ overflow: "hidden" }}>
         {error ? (
           <div className="empty" style={{ padding: 16 }}>Couldn&apos;t load this folder — {error}</div>
-        ) : items.length === 0 ? (
-          <div className="empty" style={{ padding: 16 }}>This folder is empty.</div>
         ) : (
-          <>
-            {folders.length > 0 && (
-              <>
-                <div className="fgroup-h">Folders · {folders.length}</div>
-                <div className="filelist">
-                  {folders.map((f) => (
-                    <Link key={f.id} href={`/files?folder=${encodeURIComponent(f.id)}`} className="frow">
-                      <span className="ficon folder">{iconFor(f.mimeType)}</span>
-                      <span className="fname">{f.name}</span>
-                      <span className="ftype">Folder</span>
-                      <span className="fmeta">{fmtDate(f.modifiedTime)}</span>
-                    </Link>
-                  ))}
-                </div>
-              </>
-            )}
-            {files.length > 0 && (
-              <>
-                <div className="fgroup-h">Files · {files.length}</div>
-                <div className="filelist">
-                  {files.map((f) => (
-                    <a
-                      key={f.id}
-                      href={f.webViewLink ?? "#"}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="frow"
-                    >
-                      <span className="ficon file">{iconFor(f.mimeType)}</span>
-                      <span className="fname">{f.name}</span>
-                      <span className="ftype">{typeLabel(f.mimeType)}</span>
-                      <span className="fmeta">{fmtDate(f.modifiedTime)}</span>
-                    </a>
-                  ))}
-                </div>
-              </>
-            )}
-          </>
+          <FilesPanel folders={folders} files={files} folderId={folderId} />
         )}
       </div>
     </div>
