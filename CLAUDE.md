@@ -198,6 +198,24 @@ Stages 1–3 done: workspace created, data Sheet live (10 tabs, seeded), Google 
 - **Contacts-list bulk enroll (3.6.2) — SKIPPED:** `ContactsTable` has no row-selection today (only filter dropdowns); did not build selection infrastructure, per scope.
 - **Rate `weekly` added** — `RATE_PERIODS` now includes `weekly`; `monthlyValue` normalizes weekly × 52 / 12 (e.g. FWSA After-School $80/wk → $346.67 MRR). Added to the enum, the program form (auto via `RATE_PERIODS`), and the revenue calc.
 
+**🚀 MERGED TO PRODUCTION — production = Parts 1 → 3.6.** `feat/programs-enrollment-attachments` fast-forwarded into `main` at commit **`4d28fa5`** and deployed live at `https://pvle-command-center.vercel.app`.
+- Pre-merge **data-level verification** (impersonated SA against the live Sheet, via the real app code path): schema (Programs rate cols, Enrollments + Attachments tabs), referential integrity (0 orphans), revenue math (2×$80/wk = **$693.33 MRR**; a `rate_override` shifts it to **$780.00**), `weekly` in the enum everywhere — **all PASS**. Scratch test rows (`ZZ_AUTOTEST` + 2 contacts + 2 enrollments) created then deleted; Sheet returned to **9 programs / 6 contacts / 0 enrollments / $0 MRR**.
+- Post-deploy **prod checks**: `/` → our `/signin` (307, not Vercel SSO); sign-in markers present; public routes 200; `/api/*` gated (401); live-Sheet schema/integrity re-check clean; runtime logs **0 errors / 0 5xx**.
+- Verification harness was throwaway `tsx` scripts run with `env $(grep '^GOOGLE_' .env.local | xargs)` (ADC → impersonate `crm-sheets`); not committed.
+
+## v2 backlog (deferred — not built)
+- **Enroll-from-Contacts-list selection** — 3.6.2 was skipped because `ContactsTable` has no row selection. Add checkboxes + a bulk "Enroll in program…" action → the **existing** `/api/enrollments` `contact_ids[]` batch endpoint (no new write path needed).
+- **Enrollment-aware CSV import** — one flow: import contacts → auto-enroll them into a chosen program (chains the Wix import into the bulk-enroll endpoint).
+- **Umoja sync** — external-system integration (scope TBD).
+- **Session-user greeting** — the dashboard header greeting ("Welcome back, **Juleon**") is hardcoded in `src/app/page.tsx`; read the signed-in user's name/email from the session (`auth()`) instead.
+
+## Preview environment (Vercel) — setup (so it's not rediscovered)
+- **Env vars:** `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `ALLOWED_EMAILS` are set for **Production AND Preview**; `AUTH_URL` is **Production-only** (Preview infers host from the request). `GCP_*` / `GOOGLE_*` are on Development + Preview + Production. Sensitive vars read blank via `vercel env pull` — verify functionally, not by pull.
+- **Google OAuth:** the preview branch-alias callback (`…-git-<branch>-…vercel.app/api/auth/callback/google`) is registered in the OAuth client alongside prod + localhost.
+- **WIF:** the workload-identity provider's attribute condition allows **`environment:preview`** (not production-only), so preview data-auth (Sheets/Drive) works.
+- **Deployment protection:** per-deployment + branch-alias preview URLs are **SSO-gated** (the Vercel account owner passes via their session; curl gets `302 → vercel.com/sso-api`). The **production alias is public**. So test/pull prod behavior via `pvle-command-center.vercel.app`; test preview in a browser as the owner.
+- **Gotcha:** a preview deployment must **postdate** an env-var change to bake it in — after adding/changing Preview env, rebuild with an empty commit + push.
+
 ## Known TODOs
 - **Entity progress bar** — the ecosystem zone cards omit the numeric progress bar; there's no progress/percent field in the `Entities` tab yet. Add the field, then render the bar.
 - **Content stripe color** — cards color their top stripe by `Content.entity` → `Entities.color_primary`, falling back to muted `#8C7B5C` when a row's `entity` doesn't match an entity `id`. Verified resolving correctly for all seeded rows today; keep `Content.entity` values as valid entity ids (or add validation) so the stripe never silently defaults.
