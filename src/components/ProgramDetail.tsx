@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Pencil, Trash2, Plus, Search, X, UserPlus } from "lucide-react";
+import { Pencil, Trash2, Check, Search, X, UserPlus } from "lucide-react";
 import { STATUS_COLOR, RATE_PERIOD_LABEL, type Program } from "@/lib/programs";
 import {
   ENROLLMENT_STATUS_COLOR,
@@ -41,6 +41,9 @@ export default function ProgramDetail({
   const [editing, setEditing] = useState<Program | null>(null);
   const [picking, setPicking] = useState(false);
   const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [enrolling, setEnrolling] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const contactById = useMemo(() => new Map(contacts.map((c) => [c.id, c])), [contacts]);
@@ -95,34 +98,47 @@ export default function ProgramDetail({
     }
   }
 
-  async function enroll(contact: Contact) {
+  function toggle(id: string) {
+    setSelected((s) => {
+      const n = new Set(s);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      return n;
+    });
+  }
+
+  function closePicker() {
     setPicking(false);
     setSearch("");
-    const tempId = "temp-" + Math.random().toString(36).slice(2, 8);
-    const optimistic: Enrollment = {
-      id: tempId,
-      program_id: program.id,
-      contact_id: contact.id,
-      status: "active",
-      start_date: "",
-      end_date: "",
-      rate_override: "",
-      notes: "",
-      created_at: "",
-    };
-    setEnrollments((cur) => [...cur, optimistic]);
+    setSelected(new Set());
+  }
+
+  // Bulk enroll the selected contacts in ONE batch call; server skips already-active.
+  async function enrollSelected() {
+    const ids = [...selected];
+    if (ids.length === 0 || enrolling) return;
+    setEnrolling(true);
+    setError(null);
     try {
       const res = await fetch("/api/enrollments", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ program_id: program.id, contact_id: contact.id, status: "active" }),
+        body: JSON.stringify({ program_id: program.id, contact_ids: ids }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.ok) throw new Error(data.error || `Enroll failed (${res.status})`);
-      setEnrollments((cur) => cur.map((e) => (e.id === tempId ? (data.row as Enrollment) : e)));
+      const created = (data.rows ?? []) as Enrollment[];
+      setEnrollments((cur) => [...cur, ...created]);
+      const skipped = data.skipped ?? 0;
+      setNotice(
+        `Enrolled ${created.length} contact${created.length === 1 ? "" : "s"}` +
+          (skipped ? ` · ${skipped} skipped — already enrolled` : ""),
+      );
+      closePicker();
     } catch (e) {
-      setEnrollments((cur) => cur.filter((e) => e.id !== tempId));
       setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setEnrolling(false);
     }
   }
 
@@ -222,8 +238,8 @@ export default function ProgramDetail({
       <div className="panel cc-fade pd-roster">
         <div className="sect-h">
           <div className="t">Roster</div>
-          <button className="addbtn" onClick={() => setPicking((v) => !v)}>
-            <UserPlus size={15} /> Enroll contact
+          <button className="addbtn" onClick={() => (picking ? closePicker() : setPicking(true))}>
+            <UserPlus size={15} /> Enroll contacts
           </button>
         </div>
 
@@ -239,18 +255,38 @@ export default function ProgramDetail({
               />
             </div>
             <div className="pd-picklist">
-              {pickable.map((c) => (
-                <button key={c.id} className="pd-pick" onClick={() => enroll(c)}>
-                  <Plus size={13} />
-                  <span className="pd-pick-name">{c.name}</span>
-                  <span className="pd-pick-sub">{c.email || c.org || "—"}</span>
-                </button>
-              ))}
+              {pickable.map((c) => {
+                const sel = selected.has(c.id);
+                return (
+                  <button
+                    key={c.id}
+                    className={"pd-pick" + (sel ? " sel" : "")}
+                    aria-pressed={sel}
+                    onClick={() => toggle(c.id)}
+                  >
+                    <span className={"pd-check" + (sel ? " on" : "")} aria-hidden="true">
+                      {sel && <Check size={11} strokeWidth={3} />}
+                    </span>
+                    <span className="pd-pick-name">{c.name}</span>
+                    <span className="pd-pick-sub">{c.email || c.org || "—"}</span>
+                  </button>
+                );
+              })}
               {pickable.length === 0 && (
                 <div className="empty" style={{ padding: 10 }}>
                   {contacts.length === 0 ? "No contacts yet." : "No matching contacts."}
                 </div>
               )}
+            </div>
+            <div className="pd-picker-foot">
+              <span className="pd-selcount">{selected.size} selected</span>
+              <button className="btn-gold" disabled={selected.size === 0 || enrolling} onClick={enrollSelected}>
+                {enrolling
+                  ? "Enrolling…"
+                  : selected.size
+                    ? `Enroll ${selected.size} contact${selected.size === 1 ? "" : "s"}`
+                    : "Enroll"}
+              </button>
             </div>
           </div>
         )}
@@ -303,6 +339,14 @@ export default function ProgramDetail({
         <div className="toast" role="alert">
           <span>{error}</span>
           <button aria-label="Dismiss" onClick={() => setError(null)}>
+            <X size={14} />
+          </button>
+        </div>
+      )}
+      {notice && (
+        <div className="toast ok" role="status">
+          <span>{notice}</span>
+          <button aria-label="Dismiss" onClick={() => setNotice(null)}>
             <X size={14} />
           </button>
         </div>

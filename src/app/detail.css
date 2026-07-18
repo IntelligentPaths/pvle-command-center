@@ -62,3 +62,10 @@
 .cc .pd-row-sub { font-size: 10.5px; color: var(--dim); }
 .cc .pd-row-rate { font-family: var(--font-plex-mono), monospace; font-size: 11px; color: var(--mut); white-space: nowrap; }
 @media (max-width: 720px) { .cc .pd-stats { grid-template-columns: 1fr 1fr; } }
+/* multi-select enroll picker (bulk enrollment) */
+.cc .pd-pick.sel { background: rgba(245, 181, 49, .08); }
+.cc .pd-check { width: 16px; height: 16px; border-radius: 5px; border: 1.5px solid #5a4a2c; flex: none; display: inline-flex; align-items: center; justify-content: center; color: #16120c; }
+.cc .pd-check.on { background: var(--gold); border-color: var(--gold); }
+.cc .pd-picker-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 6px 2px; margin-top: 6px; border-top: 1px solid var(--edge); }
+.cc .pd-selcount { font-family: var(--font-plex-mono), monospace; font-size: 10px; color: var(--dim); }
+.cc .toast.ok { border-color: #3d5233; }

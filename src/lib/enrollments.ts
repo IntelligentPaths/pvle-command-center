@@ -37,6 +37,7 @@ export const isActive = (e: { status: string }): boolean => (e.status || "").toL
 export function monthlyValue(amount: number, period: string): number {
   const p = (period || "").toLowerCase();
   if (p === "monthly") return amount;
+  if (p === "weekly") return (amount * 52) / 12; // e.g. $80/wk → $346.67/mo
   if (p === "annual") return amount / 12;
   return 0; // one_time, session, blank
 }

@@ -193,6 +193,11 @@ Stages 1–3 done: workspace created, data Sheet live (10 tabs, seeded), Google 
 - **Linked-record chips** — a listed file that is a record attachment shows a "linked to `<record>`" chip (drive_file_id → Attachments → parent record name, NLT-filtered) that navigates to the record.
 - **Client/server split:** Drive **types/constants** live in client-safe `src/lib/driveShared.ts` so `FilesPanel` doesn't pull the Google SDK into the browser bundle; `src/lib/drive.ts` re-exports them. (Gotcha for future client components: import Drive types from `driveShared`, not `drive`.)
 
+**Bulk enrollment (Part 3.6).**
+- **Multi-select roster enroll** — the program-detail enroll picker is now multi-select (checkboxes + "N selected" + one "Enroll N contacts"). Server **batch-appends in ONE `appendRows` call**, skipping contacts already actively enrolled (result toast: "N skipped — already enrolled"). Bulk rows: `status=active`, `start_date=today`, no `rate_override`. `/api/enrollments` POST accepts `contact_ids[]` (bulk) OR `contact_id` (single) through one shared `enrollmentRecord` builder (single path unchanged).
+- **Contacts-list bulk enroll (3.6.2) — SKIPPED:** `ContactsTable` has no row-selection today (only filter dropdowns); did not build selection infrastructure, per scope.
+- **Rate `weekly` added** — `RATE_PERIODS` now includes `weekly`; `monthlyValue` normalizes weekly × 52 / 12 (e.g. FWSA After-School $80/wk → $346.67 MRR). Added to the enum, the program form (auto via `RATE_PERIODS`), and the revenue calc.
+
 ## Known TODOs
 - **Entity progress bar** — the ecosystem zone cards omit the numeric progress bar; there's no progress/percent field in the `Entities` tab yet. Add the field, then render the bar.
 - **Content stripe color** — cards color their top stripe by `Content.entity` → `Entities.color_primary`, falling back to muted `#8C7B5C` when a row's `entity` doesn't match an entity `id`. Verified resolving correctly for all seeded rows today; keep `Content.entity` values as valid entity ids (or add validation) so the stripe never silently defaults.

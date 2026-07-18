@@ -11,10 +11,11 @@ export const STATUS_COLOR: Record<string, string> = {
 };
 
 // Rate period (the spec's rate_period). Blank = no rate set (informational program).
-export const RATE_PERIODS = ["one_time", "monthly", "session", "annual"] as const;
+export const RATE_PERIODS = ["one_time", "weekly", "monthly", "session", "annual"] as const;
 export type RatePeriod = (typeof RATE_PERIODS)[number];
 export const RATE_PERIOD_LABEL: Record<string, string> = {
   one_time: "one-time",
+  weekly: "/ wk",
   monthly: "/ mo",
   session: "/ session",
   annual: "/ yr",

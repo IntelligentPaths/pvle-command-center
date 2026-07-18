@@ -3,7 +3,7 @@
 // program roster (2.3) and the contact-side enroll (2.4).
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { readTab, appendRow, updateRowById, deleteRowById, newId } from "@/lib/sheets";
+import { readTab, appendRow, appendRows, updateRowById, deleteRowById, newId } from "@/lib/sheets";
 import { ensureRelationalSchema, ENROLLMENTS_TAB } from "@/lib/schema";
 
 export const runtime = "nodejs";
@@ -44,29 +44,78 @@ export async function GET(req: Request) {
   }
 }
 
+// Shared enrollment-row builder — single + bulk produce identical row shapes.
+function enrollmentRecord(
+  program_id: string,
+  contact_id: string,
+  opts: { status?: string; start_date?: string; end_date?: string; rate_override?: string; notes?: string } = {},
+): Record<string, string> {
+  return {
+    id: newId("enr_"),
+    program_id,
+    contact_id,
+    status: (opts.status ?? "active").trim() || "active",
+    start_date: opts.start_date ?? "",
+    end_date: opts.end_date ?? "",
+    rate_override: opts.rate_override ?? "",
+    notes: opts.notes ?? "",
+    created_at: new Date().toISOString(),
+  };
+}
+
 export async function POST(req: Request) {
   const body = await readBody(req);
   if (!body) return bad("Invalid JSON body");
   const program_id = String(body.program_id ?? "").trim();
-  const contact_id = String(body.contact_id ?? "").trim();
   if (!program_id) return bad("program_id is required");
+
+  // --- Bulk enroll: contact_ids[] → ONE batch append, skipping already-active enrollees. ---
+  if (Array.isArray(body.contact_ids)) {
+    const ids = [
+      ...new Set((body.contact_ids as unknown[]).map((x) => String(x ?? "").trim()).filter(Boolean)),
+    ];
+    if (ids.length === 0) return bad("contact_ids is empty");
+    try {
+      await ensureRelationalSchema();
+      const existing = await readTab(ENROLLMENTS_TAB);
+      const active = new Set(
+        existing
+          .filter((e) => e.program_id === program_id && (e.status || "").toLowerCase() === "active")
+          .map((e) => e.contact_id),
+      );
+      const toAdd = ids.filter((cid) => !active.has(cid));
+      const skipped = ids.length - toAdd.length;
+      const today = new Date().toISOString().slice(0, 10);
+      const rows = await appendRows(
+        ENROLLMENTS_TAB,
+        toAdd.map((cid, i) => {
+          const rec = enrollmentRecord(program_id, cid, { status: "active", start_date: today });
+          rec.id = newId("enr_") + i.toString(36); // guarantee unique ids within the batch
+          return rec;
+        }),
+      );
+      revalidate();
+      return NextResponse.json({ ok: true, rows, skipped }, { status: 201 });
+    } catch (e) {
+      return NextResponse.json({ ok: false, error: msg(e) }, { status: 500 });
+    }
+  }
+
+  // --- Single enroll (existing behavior). ---
+  const contact_id = String(body.contact_id ?? "").trim();
   if (!contact_id) return bad("contact_id is required");
-
-  const obj: Record<string, string> = {
-    id: newId("enr_"),
-    program_id,
-    contact_id,
-    status: String(body.status ?? "active").trim() || "active",
-    start_date: String(body.start_date ?? "").trim(),
-    end_date: String(body.end_date ?? "").trim(),
-    rate_override: String(body.rate_override ?? "").trim(),
-    notes: String(body.notes ?? "").trim(),
-    created_at: new Date().toISOString(),
-  };
-
   try {
     await ensureRelationalSchema();
-    const row = await appendRow(ENROLLMENTS_TAB, obj);
+    const row = await appendRow(
+      ENROLLMENTS_TAB,
+      enrollmentRecord(program_id, contact_id, {
+        status: String(body.status ?? "active"),
+        start_date: String(body.start_date ?? ""),
+        end_date: String(body.end_date ?? ""),
+        rate_override: String(body.rate_override ?? ""),
+        notes: String(body.notes ?? ""),
+      }),
+    );
     revalidate();
     return NextResponse.json({ ok: true, row }, { status: 201 });
   } catch (e) {
